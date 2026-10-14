@@ -44,7 +44,8 @@ ${r('js/api.js')}
 <script>
 ${r('js/app.js')}
 </script>`;
-const body = makeBody(false);
+// El visor de claude.ai bloquea imágenes externas (teselas): ahí se usa directo el mapa dibujado
+const body = `<script>window.HUELLAS_VECTOR_MAP = true;</script>\n${makeBody(false)}`;
 
 // Para la versión de un solo archivo se incrustan las fotos y los videos cortos como data URIs,
 // así se ve completa aunque se mande sola por WhatsApp (sin la carpeta media/).

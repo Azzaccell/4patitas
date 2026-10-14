@@ -180,7 +180,8 @@ const pinIcon = r => L.divIcon({
   html: `<div class="pin ${r.type === 'perdido' ? 'pulse' : ''}" style="--c:${TYPES[r.type].color}"><svg viewBox="0 0 24 24">${ICONS[SPECIES[r.species]] || ICONS.paw}</svg></div>`,
 });
 // Mapa vectorial propio de Santa Cruz (anillos, radiales, río Piraí, barrios) si las teselas no cargan.
-const VECTOR = !!window.HUELLAS_VECTOR_MAP;
+// ?mapa=dibujo fuerza el mapa dibujado (útil para revisar la versión compartible)
+const VECTOR = !!window.HUELLAS_VECTOR_MAP || /[?&]mapa=dibujo/.test(location.search);
 const RINGS = [['1er', 750], ['2do', 1450], ['3er', 2350], ['4to', 3350], ['5to', 4450], ['6to', 5650], ['7mo', 6900], ['8vo', 8200]];
 const RADIALS = [-12, 18, 48, 82, 128, 168, 205, 240, 300, 335]; // rumbos de las avenidas radiales
 const offset = ([lat, lng], m, deg) => {
@@ -198,6 +199,7 @@ function drawCity(map, { labels = true } = {}) {
   L.polyline([[-17.70, -63.215], [-17.73, -63.222], [-17.76, -63.214], [-17.79, -63.221], [-17.82, -63.214], [-17.86, -63.222]], { color: cssVar('--sage'), weight: 6, opacity: .7, lineCap: 'round', interactive: false }).addTo(map);
   L.circleMarker(CENTER, { radius: 6, color: ink, fillColor: cssVar('--apricot'), fillOpacity: 1, weight: 1.75, interactive: false }).addTo(map);
   if (labels) Object.entries(ZONES).forEach(([z, ll]) => L.marker(ll, { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<div class="zone-label">${z}</div>` }) }).addTo(map));
+  if (labels) L.marker([-17.775, -63.227], { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: '<div class="river-label">río Piraí</div>' }) }).addTo(map);
 }
 const makeMap = (el, opts = {}) => {
   const map = L.map(el, { zoomControl: false, attributionControl: true, ...opts }).setView(opts.center || CENTER, opts.zoom || 13);
