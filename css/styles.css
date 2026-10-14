@@ -283,11 +283,11 @@ footer.foot{padding:56px 0 110px;margin-top:70px;border-top:1px solid var(--ink)
 .thumb{width:56px;height:56px;flex-shrink:0;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--c,var(--pastel));border:1px solid var(--ink)}
 .thumb video,.thumb img{width:100%;height:100%;object-fit:cover}
 .thumb .media-blank .ico{width:56%;height:56%;stroke-width:1.5}
-.tiles{filter:grayscale(.85) sepia(.18) contrast(.95) brightness(1.04)}
+.tiles{filter:grayscale(.8) sepia(.15) contrast(.92) brightness(1.06)}
 .tiles-dark{filter:grayscale(.85) sepia(.18) contrast(.95) brightness(1.04)}
 .pin{width:46px;height:46px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);position:relative;transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
 .pin::after{content:'';position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);border:6px solid transparent;border-top:10px solid var(--ink);border-bottom:0}
-.pin img,.pin .pin__ico{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--t)}
+.leaflet-container .pin img,.pin .pin__ico{max-width:none!important;width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--t)}
 .pin svg{width:24px;height:24px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .pin.pulse{box-shadow:0 0 0 5px var(--pastel)}
 .pin.pulse::before{content:'';position:absolute;inset:-9px;border-radius:50%;border:1.5px dashed var(--ink);animation:spin 9s linear infinite}

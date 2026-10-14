@@ -299,11 +299,11 @@ footer.foot{padding:56px 0 110px;margin-top:70px;border-top:1px solid var(--ink)
 .thumb{width:56px;height:56px;flex-shrink:0;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--c,var(--pastel));border:1px solid var(--ink)}
 .thumb video,.thumb img{width:100%;height:100%;object-fit:cover}
 .thumb .media-blank .ico{width:56%;height:56%;stroke-width:1.5}
-.tiles{filter:grayscale(.85) sepia(.18) contrast(.95) brightness(1.04)}
+.tiles{filter:grayscale(.8) sepia(.15) contrast(.92) brightness(1.06)}
 .tiles-dark{filter:grayscale(.85) sepia(.18) contrast(.95) brightness(1.04)}
 .pin{width:46px;height:46px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);position:relative;transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
 .pin::after{content:'';position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);border:6px solid transparent;border-top:10px solid var(--ink);border-bottom:0}
-.pin img,.pin .pin__ico{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--t)}
+.leaflet-container .pin img,.pin .pin__ico{max-width:none!important;width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--t)}
 .pin svg{width:24px;height:24px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .pin.pulse{box-shadow:0 0 0 5px var(--pastel)}
 .pin.pulse::before{content:'';position:absolute;inset:-9px;border-radius:50%;border:1.5px dashed var(--ink);animation:spin 9s linear infinite}
@@ -1226,9 +1226,15 @@ addEventListener('pointerdown', e => {
 });
 
 /* ---------- Leaflet ---------- */
-// Teselas de OpenStreetMap (gratis, sin API key); el tono sepia se da con filtros CSS
-const TILE = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+// Proveedores de mapa, en orden. Esri primero: no exige "referer", así que funciona en el HTML abierto
+// desde WhatsApp, en navegadores con privacidad estricta y en redes que OpenStreetMap bloquea.
+// Si uno no carga, se prueba el siguiente; si ninguno carga, se dibuja el mapa propio de Santa Cruz.
+const TILE_PROVIDERS = [
+  { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Mapa &copy; <a href="https://www.esri.com/">Esri</a> · datos &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> y colaboradores', maxNativeZoom: 19 },
+  { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxNativeZoom: 19 },
+];
 const esc = s => String(s || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const pinIcon = r => L.divIcon({
   className: '', iconSize: [46, 46], iconAnchor: [23, 56], popupAnchor: [0, -52],
@@ -1246,29 +1252,32 @@ const offset = ([lat, lng], m, deg) => {
 };
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function drawCity(map, { labels = true } = {}) {
-  const ink = cssVar('--ink'), soft = cssVar('--line-2');
+  const ink = cssVar('--ink'), soft = '#D8D2C4';
   RADIALS.forEach(deg => L.polyline([offset(CENTER, 300, deg), offset(CENTER, 9600, deg)], { color: soft, weight: 1.5, interactive: false }).addTo(map));
   RINGS.forEach(([name, m], i) => {
     L.circle(CENTER, { radius: m, color: ink, weight: i < 4 ? 1.75 : 1.2, opacity: .8, fill: false, interactive: false }).addTo(map);
     if (labels) L.marker(offset(CENTER, m, 0), { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<div class="ring-label">${name} anillo</div>` }) }).addTo(map);
   });
-  L.polyline([[-17.70, -63.215], [-17.73, -63.222], [-17.76, -63.214], [-17.79, -63.221], [-17.82, -63.214], [-17.86, -63.222]], { color: cssVar('--sky-d'), weight: 7, opacity: .6, lineCap: 'round', interactive: false }).addTo(map);
-  L.circleMarker(CENTER, { radius: 6, color: ink, fillColor: cssVar('--yellow'), fillOpacity: 1, weight: 1.75, interactive: false }).addTo(map);
+  L.polyline([[-17.70, -63.215], [-17.73, -63.222], [-17.76, -63.214], [-17.79, -63.221], [-17.82, -63.214], [-17.86, -63.222]], { color: cssVar('--ink-2'), weight: 6, opacity: .35, lineCap: 'round', interactive: false }).addTo(map);
+  L.circleMarker(CENTER, { radius: 6, color: ink, fillColor: cssVar('--pastel'), fillOpacity: 1, weight: 1.75, interactive: false }).addTo(map);
   if (labels) Object.entries(ZONES).forEach(([z, ll]) => L.marker(ll, { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<div class="zone-label">${z}</div>` }) }).addTo(map));
   if (labels) L.marker([-17.775, -63.227], { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: '<div class="river-label">río Piraí</div>' }) }).addTo(map);
 }
 const makeMap = (el, opts = {}) => {
   const map = L.map(el, { zoomControl: false, attributionControl: true, ...opts }).setView(opts.center || CENTER, opts.zoom || 13);
   const vector = () => { if (map._city) return; map._city = true; drawCity(map, { labels: !opts.static }); };
-  if (VECTOR) vector();
-  else {
-    let loaded = false;
-    const tiles = L.tileLayer(TILE, { attribution: ATTR, maxZoom: 19, className: opts.dark ? 'tiles-dark' : 'tiles' })
+  const tryProvider = i => {
+    const p = TILE_PROVIDERS[i];
+    if (!p) return vector();
+    let loaded = false, done = false;
+    const next = () => { if (loaded || done) return; done = true; map.removeLayer(tiles); tryProvider(i + 1); };
+    const tiles = L.tileLayer(p.url, { attribution: p.attribution, maxZoom: 19, maxNativeZoom: p.maxNativeZoom, referrerPolicy: 'no-referrer', className: 'tiles' })
       .on('tileload', () => { loaded = true; })
-      .on('tileerror', () => { if (!loaded) { map.removeLayer(tiles); vector(); } })
+      .on('tileerror', next)
       .addTo(map);
-    setTimeout(() => { if (!loaded && map.hasLayer(tiles)) { map.removeLayer(tiles); vector(); } }, 8000);
-  }
+    setTimeout(next, 6000);
+  };
+  if (VECTOR) vector(); else tryProvider(0);
   if (opts.zoomControl !== false && !opts.static) L.control.zoom({ position: 'topright' }).addTo(map);
   return markRaw(map);
 };

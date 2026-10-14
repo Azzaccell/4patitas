@@ -23,7 +23,7 @@ Genera dos archivos que llevan el CSS y el JS dentro:
 - `4patitas-movil.html`: documento completo con el mapa de OpenStreetMap. Lo empaqueta `4patitas-movil.zip`, como `index.html` más la carpeta `media/`, listo para subir a cualquier hosting.
 - `compartir.html`: versión publicada en https://claude.ai/artifact/7pvxrQH86sxVVW6qux9Fok. Ese visor no permite cargar teselas externas ni conectarse a la base de datos, así que usa el mapa dibujado de Santa Cruz y datos de ejemplo.
 
-La web y `4patitas-movil.html` usan OpenStreetMap; si las teselas no cargan, muestran el mapa dibujado de Santa Cruz (anillos, radiales y río Piraí). Para revisar ese mapa dibujado en cualquier versión, agrega `?mapa=dibujo` a la dirección.
+La web y `4patitas-movil.html` cargan el mapa de Esri (no exige "referer", así que funciona aunque el teléfono o la red lo oculten); si no carga, prueban OpenStreetMap, y si tampoco, muestran el mapa dibujado de Santa Cruz (anillos, radiales y río Piraí). Para revisar ese mapa dibujado en cualquier versión, agrega `?mapa=dibujo` a la dirección.
 Cada vez que cambies algo en `css/` o `js/`, vuelve a correr `node build.js`.
 
 ## Base de datos compartida (Supabase)
