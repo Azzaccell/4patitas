@@ -1,48 +1,80 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- 4 Patitas: gata calicó y perro blanco con sombrero de paja y pañuelo verde,
-       uno frente al otro. Formas planas recortadas, sin contornos, sobre amarillo. -->
+  <!-- 4 Patitas: caras de la gata y el perro dibujadas a mano alzada (trazo de lápiz imperfecto)
+       sobre un círculo pastel con lunares. El filtro "lapiz" deforma levemente el trazo. -->
   <defs>
-    <clipPath id="t4"><rect width="512" height="512" rx="116"/></clipPath>
-    <clipPath id="g4"><path d="M-20 600 L-20 380 C-10 320 20 285 55 270 L50 192 L100 244 C120 236 142 234 160 238 L198 196 L204 262 C222 286 226 318 214 340 C204 360 184 368 172 372 C176 430 180 520 182 600 Z"/></clipPath>
+    <filter id="lapiz" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="lapiz2" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="G" yChannelSelector="R"/>
+    </filter>
+    <pattern id="lunares" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="8" r="4.2" fill="#FFFDF7"/>
+      <circle cx="25" cy="25" r="4.2" fill="#FFFDF7"/>
+    </pattern>
+    <clipPath id="caraGata"><path d="M95 300 C92 250 120 224 175 224 C230 224 258 250 255 300 C252 350 220 378 175 378 C130 378 98 350 95 300 Z"/></clipPath>
   </defs>
-  <g clip-path="url(#t4)">
-    <rect width="512" height="512" fill="#FFE935"/>
-    <g transform="translate(0 -34)">
 
-    <!-- perro: mira a la izquierda -->
-    <path fill="#FFFFFF" d="M600 600 L600 300 C515 240 485 200 440 184 C400 170 360 176 336 196 C318 212 308 234 292 246 C276 256 262 264 256 280 C250 296 256 316 272 322 C296 332 322 334 342 340 C352 344 356 360 352 390 C346 450 340 520 338 600 Z"/>
-    <path fill="#ECE8D9" d="M424 206 C454 214 474 252 470 304 C468 336 450 354 432 348 C416 314 410 258 424 206 Z"/>
-    <ellipse cx="261" cy="285" rx="15" ry="12" fill="#1C1B19"/>
-    <circle cx="332" cy="244" r="10.5" fill="#1C1B19"/>
-    <circle cx="335.5" cy="240.5" r="3.4" fill="#FFFFFF"/>
-    <path d="M278 322 C298 330 318 330 338 326" fill="none" stroke="#1C1B19" stroke-width="5.5" stroke-linecap="round"/>
-    <path fill="#4E8F4A" d="M352 398 C410 414 476 410 600 392 L600 446 C520 458 452 462 414 460 L370 522 L352 518 C354 478 355 440 352 398 Z"/>
-    <circle cx="372" cy="430" r="13" fill="#3F7A3C"/>
-    <path fill="#E9C46E" d="M350 182 C350 130 378 104 412 104 C450 104 470 134 468 178 Z"/>
-    <path fill="#1C1B19" d="M351 166 C390 158 430 156 468 162 L468 178 C430 172 390 174 351 184 Z"/>
-    <ellipse cx="410" cy="184" rx="120" ry="24" transform="rotate(-6 410 184)" fill="#F2D68C"/>
-    <path d="M304 194 C344 186 384 182 424 182 M326 202 C366 196 406 193 452 192" fill="none" stroke="#D9B45C" stroke-width="4" stroke-linecap="round"/>
+  <!-- soporte gráfico: círculo pastel plano con lunares -->
+  <circle cx="256" cy="262" r="236" fill="#F6E7A9"/>
+  <circle cx="256" cy="262" r="236" fill="url(#lunares)" opacity=".75"/>
 
-    <!-- gata: mira a la derecha -->
-    <path fill="#FFFFFF" d="M-20 600 L-20 380 C-10 320 20 285 55 270 L50 192 L100 244 C120 236 142 234 160 238 L198 196 L204 262 C222 286 226 318 214 340 C204 360 184 368 172 372 C176 430 180 520 182 600 Z"/>
-    <g clip-path="url(#g4)">
-      <ellipse cx="44" cy="250" rx="66" ry="62" fill="#1C1B19"/>
-      <ellipse cx="60" cy="364" rx="54" ry="40" fill="#F2A35E"/>
-      <ellipse cx="10" cy="480" rx="56" ry="44" fill="#1C1B19"/>
-      <ellipse cx="140" cy="486" rx="34" ry="28" fill="#F2A35E"/>
+  <g stroke="#2A2723" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- GATA -->
+    <g filter="url(#lapiz)" stroke-width="6">
+      <path d="M108 268 L100 186 L156 228" fill="#FFFDF7"/>
+      <path d="M196 228 L250 188 L246 270" fill="#FFFDF7"/>
+      <path d="M95 300 C92 250 120 224 175 224 C230 224 258 250 255 300 C252 350 220 378 175 378 C130 378 98 350 95 300 Z" fill="#FFFDF7"/>
+      <g clip-path="url(#caraGata)"><path d="M196 222 C230 220 262 240 260 276 C250 288 226 286 210 272 C198 262 192 244 196 222 Z" fill="#2A2723" stroke="none"/></g>
+      <circle cx="143" cy="300" r="6.5" fill="#2A2723" stroke="none"/>
+      <circle cx="207" cy="300" r="6.5" fill="#2A2723" stroke="none"/>
+      <path d="M169 318 L181 318 L175 326 Z" fill="#2A2723"/>
+      <path d="M160 332 Q167 341 175 332 Q183 341 190 332" stroke-width="4.5"/>
+      <path d="M118 318 L78 310 M118 330 L76 334 M232 318 L272 310 M232 330 L274 334" stroke-width="4"/>
     </g>
-    <circle cx="172" cy="290" r="9" fill="#1C1B19"/>
-    <circle cx="175.3" cy="286.7" r="2.9" fill="#FFFFFF"/>
-    <path d="M206 312 L219 314 L211 324 Z" fill="#E98F84"/>
-    <path d="M211 326 C206 334 196 336 188 332" fill="none" stroke="#1C1B19" stroke-width="4.5" stroke-linecap="round"/>
-    <path d="M198 318 L238 310 M198 328 L240 332" fill="none" stroke="#1C1B19" stroke-width="3.4" stroke-linecap="round"/>
-    <path fill="#4E8F4A" d="M-20 410 C40 398 100 392 166 388 C168 402 170 416 172 430 C110 434 50 442 -20 456 Z"/>
-    <path fill="#4E8F4A" d="M150 394 L200 412 L178 462 L158 426 Z"/>
-    <circle cx="160" cy="408" r="12" fill="#3F7A3C"/>
-    <path fill="#E9C46E" d="M46 234 C48 192 70 170 100 170 C132 170 150 194 148 232 Z"/>
-    <path fill="#1C1B19" d="M47 220 C80 212 116 210 148 216 L148 232 C116 226 80 228 47 236 Z"/>
-    <ellipse cx="96" cy="236" rx="90" ry="19" transform="rotate(5 96 236)" fill="#F2D68C"/>
-    <path d="M18 236 C50 232 82 234 120 240 M34 246 C72 244 110 246 152 252" fill="none" stroke="#D9B45C" stroke-width="3.4" stroke-linecap="round"/>
+    <circle cx="124" cy="330" r="14" fill="#F6E7A9" stroke="none"/>
+    <circle cx="226" cy="330" r="14" fill="#F6E7A9" stroke="none"/>
+    <!-- sombrero de paja de la gata -->
+    <g filter="url(#lapiz)" stroke-width="5.5">
+      <path d="M124 222 C124 182 146 164 174 164 C204 164 222 182 222 222" fill="#FFFDF7"/>
+      <ellipse cx="172" cy="226" rx="94" ry="17" fill="#FFFDF7"/>
+      <path d="M126 210 C156 202 192 202 220 210" stroke-width="7"/>
+    </g>
+    <path d="M100 228 L118 224 M132 232 L150 230 M196 230 L214 232 M226 228 L244 230" stroke-width="3" filter="url(#lapiz2)" opacity=".7"/>
+
+    <!-- PERRO -->
+    <g filter="url(#lapiz)" stroke-width="6">
+      <path d="M272 300 C268 248 298 222 342 222 C386 222 416 248 412 300 C409 352 382 380 342 380 C302 380 275 352 272 300 Z" fill="#FFFDF7"/>
+      <path d="M286 252 C260 254 248 292 254 332 C258 354 274 354 282 338 C288 312 292 282 294 262 Z" fill="#FFFDF7"/>
+      <path d="M398 252 C424 254 436 292 430 332 C426 354 410 354 402 338 C396 312 392 282 390 262 Z" fill="#FFFDF7"/>
+      <ellipse cx="342" cy="332" rx="34" ry="24" fill="#FFFDF7"/>
+      <ellipse cx="342" cy="320" rx="11" ry="8" fill="#2A2723" stroke="none"/>
+      <path d="M342 328 L342 338 M328 342 Q342 350 356 342" stroke-width="4.5"/>
+      <circle cx="314" cy="292" r="6.5" fill="#2A2723" stroke="none"/>
+      <circle cx="370" cy="292" r="6.5" fill="#2A2723" stroke="none"/>
+    </g>
+    <circle cx="300" cy="330" r="13" fill="#F6E7A9" stroke="none"/>
+    <circle cx="384" cy="330" r="13" fill="#F6E7A9" stroke="none"/>
+    <!-- sombrero de paja del perro -->
+    <g filter="url(#lapiz)" stroke-width="5.5">
+      <path d="M292 220 C292 178 316 160 344 160 C374 160 394 178 394 220" fill="#FFFDF7"/>
+      <ellipse cx="342" cy="224" rx="100" ry="18" fill="#FFFDF7"/>
+      <path d="M294 207 C326 199 362 199 392 207" stroke-width="7"/>
+    </g>
+    <path d="M262 226 L280 222 M296 230 L314 228 M370 228 L388 230 M402 226 L420 228" stroke-width="3" filter="url(#lapiz2)" opacity=".7"/>
+
+    <!-- segunda pasada de lápiz, más tenue, como al repasar el dibujo -->
+    <g filter="url(#lapiz2)" stroke-width="2.2" opacity=".35">
+      <path d="M95 300 C92 250 120 224 175 224 C230 224 258 250 255 300 C252 350 220 378 175 378 C130 378 98 350 95 300 Z"/>
+      <path d="M272 300 C268 248 298 222 342 222 C386 222 416 248 412 300 C409 352 382 380 342 380 C302 380 275 352 272 300 Z"/>
+    </g>
+
+    <!-- garabatos: corazón y destellos -->
+    <g filter="url(#lapiz)" stroke-width="4.5">
+      <path d="M258 140 C246 122 222 132 232 152 C238 164 258 176 258 176 C258 176 278 164 284 152 C294 132 270 122 258 140 Z" fill="#F6E7A9"/>
+      <path d="M78 150 L78 176 M65 163 L91 163 M440 140 L440 162 M429 151 L451 151"/>
     </g>
   </g>
 </svg>

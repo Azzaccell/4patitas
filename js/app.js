@@ -47,6 +47,22 @@ const ICONS = {
   bird: '<path d="M5 14.8c0-5 3.5-8.8 8-8.8 2.2 0 4 1.3 4.6 3.2L20.5 10l-2.8 1.3C17.4 16 14 19 9.5 19 7 19 5 17.3 5 14.8z"/><path d="M14.5 9.6v.01"/><path d="M7.5 13c1.8.4 3.6-.2 5-1.8M8 19l-1 2.5M11 19l.5 2.5"/>',
   rabbit: '<path d="M9.6 9C8.6 6 8.4 3 9.7 2.8c1.4-.2 1.7 3.2 1.6 5.9M14.4 9c1-3 1.2-6-.1-6.2-1.4-.2-1.7 3.2-1.6 5.9"/><path d="M6.5 14.5c0-3.4 2.5-6 5.5-6s5.5 2.6 5.5 6-2.5 5.5-5.5 5.5-5.5-2.1-5.5-5.5z"/><path d="M10 13.6v.01M14 13.6v.01"/><path d="M11.2 16h1.6l-.8.8z"/>',
 };
+// Garabatos de lápiz para títulos: [viewBox, trazos]. Se dibujan con el filtro #lapiz-dd (trazo imperfecto).
+const DOODLES = {
+  underline: ['0 0 200 24', '<path d="M4 14C34 6 62 18 96 11s70-6 100 4"/>'],
+  circle: ['0 0 220 90', '<path d="M36 16C84 0 176 4 200 34c22 30-44 50-112 50C30 84 2 64 8 42 12 24 44 12 92 8"/>'],
+  heart: ['0 0 100 100', '<path class="fill" d="M50 84C22 64 6 46 13 30c6-15 27-17 37 2 10-19 31-17 37-2 7 16-9 34-37 54z"/>'],
+  sparkle: ['0 0 100 100', '<path class="fill" d="M50 6c4 32 12 40 44 44-32 4-40 12-44 44-4-32-12-40-44-44 32-4 40-12 44-44z"/>'],
+  star: ['0 0 100 100', '<path class="fill" d="M50 8l11 30 32 1-25 19 9 32-27-19-27 19 9-32-25-19 32-1z"/>'],
+  paw: ['0 0 100 100', '<path class="fill" d="M50 88c-14 0-24-8-24-18 0-12 11-22 24-22s24 10 24 22c0 10-10 18-24 18z"/><ellipse cx="22" cy="44" rx="8" ry="10"/><ellipse cx="38" cy="24" rx="8" ry="11"/><ellipse cx="62" cy="24" rx="8" ry="11"/><ellipse cx="78" cy="44" rx="8" ry="10"/>'],
+  arrow: ['0 0 100 60', '<path d="M6 44C30 12 62 8 88 30M74 16l15 15-17 7"/>'],
+  cloud: ['0 0 100 70', '<path class="fill" d="M20 60C6 60 5 42 20 41c0-18 23-23 32-9 6-15 31-11 30 7 15 0 16 21 1 21z"/>'],
+  sun: ['0 0 100 100', '<circle class="fill" cx="50" cy="50" r="17"/><path d="M50 10v14M50 76v14M10 50h14M76 50h14M22 22l10 10M68 68l10 10M78 22L68 32M32 68L22 78"/>'],
+  bone: ['0 0 100 60', '<path class="fill" d="M28 22c-6-11-21-6-17 5-9 4-5 18 6 15l66 0c11 3 15-11 6-15 4-11-11-16-17-5z"/>'],
+  squiggle: ['0 0 100 30', '<path d="M4 16c10-14 18 14 28 0s18 14 28 0 18 14 28 0 8 8 8 8"/>'],
+  house: ['0 0 100 100', '<path d="M16 50L50 20l34 30M26 42v42h48V42"/><path class="fill" d="M44 84V64h12v20z"/>'],
+  fish: ['0 0 100 70', '<path class="fill" d="M10 35C28 12 60 12 76 35 60 58 28 58 10 35z"/><path d="M76 35l16-15v30z"/><circle cx="30" cy="31" r="2.5"/>'],
+};
 const icoSvg = (name, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ICONS.paw}</svg>`;
 const CLOUD = '<path d="M9 40c-7 0-8-11 2-12 0-11 17-15 21-4 4-13 26-11 25 4 11-1 14 12 3 12z"/>';
 
@@ -250,6 +266,12 @@ const app = createApp({
     return { route, ui, curtain, leave, enter, closeAlert, ICONS, logo: M('media/logo.svg') };
   },
   template: `
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <filter id="lapiz-dd" x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </svg>
     <site-nav />
     <transition :css="false" mode="out-in" @leave="leave" @enter="enter" appear>
       <component :is="route.comp" :key="route.path" />
@@ -283,6 +305,12 @@ app.component('cloud', {
   template: `<div class="cloud" aria-hidden="true"><svg viewBox="0 0 64 44" v-html="CLOUD"></svg></div>`,
 });
 app.component('ground', { template: `<div class="ground" aria-hidden="true"></div>` });
+// <doodle name="heart" class="dd--tr" />: garabato decorativo con trazo de lápiz
+app.component('doodle', {
+  props: { name: String },
+  setup: () => ({ DOODLES }),
+  template: `<span class="dd" aria-hidden="true"><svg :viewBox="DOODLES[name][0]" preserveAspectRatio="none" style="filter:url(#lapiz-dd)" v-html="DOODLES[name][1]"></svg></span>`,
+});
 
 /* ---------- navegación ---------- */
 const LINKS = [['/', 'Inicio', 'home'], ['/mapa', 'Mapa', 'map'], ['/publicar', 'Publicar', 'plus'], ['/comunidad', 'Comunidad', 'users'], ['/registrar', 'Mi mascota', 'paw']];
@@ -359,7 +387,7 @@ app.component('site-footer', {
           <div><h4>Tu mascota</h4><a href="#/registrar">Registrar perfil</a><a href="#/cuenta">Mi cuenta</a></div>
           <div><h4>Ayuda</h4><a href="#/">Preguntas frecuentes</a><a href="#/">Refugios aliados</a><a href="#/">Contacto</a></div>
         </div>
-        <div class="foot__big" aria-hidden="true">4 patitas</div>
+        <div class="foot__dots" aria-hidden="true"></div>
         <p class="muted mt">© ${new Date().getFullYear()} ${BRAND} · Santa Cruz de la Sierra, Bolivia</p>
       </div>
     </footer>`,
@@ -404,20 +432,23 @@ app.component('page-home', {
     const homeCount = computed(() => state.reports.filter(r => r.type === 'reunido').length);
     const byId = (...ids) => ids.map(id => state.pets.find(p => p.id === id)).filter(Boolean);
     const faces = computed(() => byId('p8', 'p12', 'p11', 'p13'));
-    const mission = LITE ? { photo: 'media/pets/golden.jpg', name: 'Golden' } : { video: 'media/v3.mp4', name: 'Tigre' };
-    const scene = M('media/logo-escena.svg');
+    const mission = { video: 'media/v1.mp4', name: 'Mishi y su hermana' }; // video sin marcas a la vista
+    const logo = M('media/logo.svg');
     let map;
 
     usePageFx(root, () => {
       gsap.from('.hero h1 .line>span', { yPercent: 110, duration: 1, ease: 'expo.out', stagger: .08, delay: .1 });
-      intro('.hero .lead, .hero__cta > *, .hero__proof', { y: 16, opacity: 0, duration: .8, ease: 'power3.out', stagger: .06, delay: .4 });
-      // la gata y el perro asoman desde abajo de la franja amarilla
-      intro('.hero__art img', { y: 120, duration: 1.1, ease: 'back.out(1.4)', delay: .2 });
-      intro('.bubble', { scale: .6, opacity: 0, duration: .5, ease: 'back.out(2.4)', stagger: .25, delay: 1.1 });
-      gsap.utils.toArray('.bubble').forEach((b, i) => gsap.to(b, { y: i ? 6 : -6, duration: 2.4 + i * .5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1.8 }));
+      intro('.hero .lead, .hero__cta > *, .hero__proof, .hero .vlabel', { y: 16, opacity: 0, duration: .8, ease: 'power3.out', stagger: .06, delay: .4 });
+      intro('.hero__art img', { scale: .85, rotate: -6, opacity: 0, duration: 1.1, ease: 'back.out(1.6)', delay: .2 });
+      intro('.note', { opacity: 0, y: 8, duration: .6, ease: 'power3.out', stagger: .3, delay: 1.2 });
+      // los garabatos se dibujan a mano: el trazo avanza de punta a punta
+      drawLines('.hero .circled path, .note path', { delay: .9, duration: .9, stagger: .15 });
+      gsap.utils.toArray('.hero .dd--float').forEach((d, i) => gsap.to(d, { y: i % 2 ? 8 : -8, rotate: i % 2 ? 8 : -8, duration: 2.6 + i * .4, repeat: -1, yoyo: true, ease: 'sine.inOut' }));
       intro('.story', { y: 12, opacity: 0, duration: .5, ease: 'power3.out', stagger: .03, delay: .3 });
-      // nubes que cruzan el cielo de "cómo funciona"
-      gsap.utils.toArray('.how .cloud').forEach((c, i) => gsap.to(c, { x: i % 2 ? -50 : 60, duration: 12 + i * 4, repeat: -1, yoyo: true, ease: 'sine.inOut' }));
+      // en cada título, el garabato aparece cuando el título entra en pantalla
+      gsap.utils.toArray('.section__head .dd, .how__intro .dd').forEach(d =>
+        gsap.fromTo(d, { scale: 0, rotate: -40 }, { scale: 1, rotate: 0, duration: .7, ease: 'back.out(2.2)', scrollTrigger: { trigger: d, start: 'top 88%' } }));
+      gsap.utils.toArray('.section__head .uline path').forEach(p => drawLines(p, { scrollTrigger: { trigger: p, start: 'top 88%' } }));
 
       gsap.utils.toArray('[data-count]').forEach(el => {
         const o = { v: 0 }, end = +el.dataset.count;
@@ -429,7 +460,7 @@ app.component('page-home', {
         gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '.how', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
       });
       drawLines('.step__art .ico *', { scrollTrigger: { trigger: '.how', start: 'top 70%' }, stagger: .02 });
-      intro('.cta__art img', { y: 80, duration: 1, ease: 'back.out(1.4)', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
+      intro('.cta__art img', { scale: .8, rotate: 8, duration: 1, ease: 'back.out(1.6)', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
     });
 
     onMounted(() => {
@@ -440,34 +471,34 @@ app.component('page-home', {
     onBeforeUnmount(() => map && map.remove());
 
     const features = [
-      ['spark', '#FFE1DC', 'Coincidencias automáticas', 'Si alguien ve un perrito parecido cerca de donde se perdió el tuyo, la app los conecta por especie, color y distancia.'],
-      ['qr', '#DCEFFA', 'Perfil con QR', 'Cada mascota tiene su ficha con fotos, señas y un QR para el collar. Quien la encuentre te avisa en un toque.'],
-      ['bell', '#FFEBCC', 'Alertas por barrio', 'Lo que pasa a tu alrededor, primero. Una alerta nueva llega a los vecinos en un radio de 5 km.'],
-      ['leaf', '#E0EFDC', 'Liviana y gratis', 'Funciona desde el navegador del celular, sin descargas. Publicar una alerta toma menos de un minuto.'],
+      ['spark', 'var(--pastel)', 'Coincidencias automáticas', 'Si alguien ve un perrito parecido cerca de donde se perdió el tuyo, la app los conecta por especie, color y distancia.'],
+      ['qr', 'var(--paper)', 'Perfil con QR', 'Cada mascota tiene su ficha con fotos, señas y un QR para el collar. Quien la encuentre te avisa en un toque.'],
+      ['bell', 'var(--paper)', 'Alertas por barrio', 'Lo que pasa a tu alrededor, primero. Una alerta nueva llega a los vecinos en un radio de 5 km.'],
+      ['leaf', 'var(--pastel)', 'Liviana y gratis', 'Funciona desde el navegador del celular, sin descargas. Publicar una alerta toma menos de un minuto.'],
     ];
     const steps = [
-      ['camera', '#FFF39A', 'Crea su perfil', 'Sube fotos, señas particulares, chip y vacunas. Si algún día se pierde, todo ya está listo.'],
-      ['megaphone', '#FFE1DC', 'Activa la alerta', 'Con un toque marcas dónde y cuándo se perdió. Su perfil se convierte en un afiche.'],
-      ['users', '#DCEFFA', 'El barrio se activa', 'Los vecinos cercanos ven la alerta y marcan en el mapa dónde la vieron.'],
-      ['heart', '#E0EFDC', 'Reencuentro', 'Te avisamos de cada coincidencia, hablas directo por WhatsApp y celebras con la comunidad.'],
+      ['camera', 'Crea su perfil', 'Sube fotos, señas particulares, chip y vacunas. Si algún día se pierde, todo ya está listo.'],
+      ['megaphone', 'Activa la alerta', 'Con un toque marcas dónde y cuándo se perdió. Su perfil se convierte en un afiche.'],
+      ['users', 'El barrio se activa', 'Los vecinos cercanos ven la alerta y marcan en el mapa dónde la vieron.'],
+      ['heart', 'Reencuentro', 'Te avisamos de cada coincidencia, hablas directo por WhatsApp y celebras con la comunidad.'],
     ];
-    const clouds = [{ w: 150, top: '10%', left: '6%' }, { w: 100, top: '62%', left: '38%' }, { w: 190, top: '18%', left: '64%' }, { w: 120, top: '74%', left: '84%' }];
-    return { root, mini, pets, lostCount, homeCount, faces, mission, scene, state, features, steps, clouds, M };
+    return { root, mini, pets, lostCount, homeCount, faces, mission, logo, state, features, steps, M };
   },
   template: `
   <main ref="root">
-    <!-- PORTADA: franja amarilla, la gata y el perro asoman desde abajo -->
+    <!-- PORTADA editorial: etiqueta vertical, título manuscrito y el dibujo en un círculo con lunares -->
     <section class="hero">
       <div class="wrap hero__grid">
-        <div class="hero__copy">
-          <span class="eyebrow"><ico name="pin" />Santa Cruz de la Sierra</span>
+        <span class="vlabel">Santa Cruz de la Sierra</span>
+        <div>
+          <span class="eyebrow">red de vecinos · mascotas</span>
           <h1 class="h-xl">
             <span class="line"><span>Cada patita</span></span>
-            <span class="line"><span>vuelve a casa.</span></span>
+            <span class="line"><span>vuelve a <span class="circled">casa<doodle name="circle" /></span>.</span></span>
           </h1>
           <p class="lead">La red de vecinos que cuida a las mascotas de Santa Cruz. Registra a la tuya, marca en el mapa a las que se perdieron y ayuda a que vuelvan con su familia en horas, no semanas.</p>
           <div class="hero__cta">
-            <a href="#/publicar" class="btn btn--alert"><ico name="megaphone" />Perdí a mi mascota</a>
+            <a href="#/publicar" class="btn btn--primary"><ico name="megaphone" />Perdí a mi mascota</a>
             <a href="#/mapa" class="btn"><ico name="map" />Ver el mapa</a>
           </div>
           <div class="hero__proof">
@@ -476,14 +507,15 @@ app.component('page-home', {
           </div>
         </div>
         <div class="hero__art">
-          <img :src="scene" alt="Dibujo de una gata calicó y un perro blanco con sombreros de paja y pañuelos verdes, mirándose" width="512" height="512">
-          <div class="bubble" style="top:6%;left:2%;--tail:30px">¿Lo has visto?<small>Toby · Equipetrol</small></div>
-          <div class="bubble" style="top:2%;right:4%;--tail:calc(100% - 48px)">¡Ya volví!<small>Nube · Las Palmas</small></div>
+          <img :src="logo" alt="Dibujo a lápiz de una gata y un perro con sombreros de paja, dentro de un círculo pastel con lunares" width="512" height="512">
+          <doodle name="sparkle" class="dd--float" style="top:4%;left:-2%;width:40px" />
+          <doodle name="star" class="dd--float" style="bottom:12%;right:-2%;width:34px" />
+          <div class="note" style="left:-4%;bottom:6%">la gata Canela<doodle name="arrow" style="width:54px;left:100%;top:-30px" /></div>
+          <div class="note" style="right:-2%;top:6%">y su amigo Toby</div>
         </div>
       </div>
     </section>
 
-    <!-- vecinos de la zona -->
     <div class="bar"><div class="wrap"><span>Vecinos de la manada</span><a href="#/comunidad?tab=perfiles">ver todos <ico name="arrow" /></a></div></div>
     <div class="wrap">
       <div class="stories" aria-label="Mascotas de la comunidad">
@@ -498,14 +530,14 @@ app.component('page-home', {
     <!-- MISIÓN -->
     <section class="section">
       <div class="wrap mission">
-        <div class="frame" data-reveal><pet-media :item="mission" /></div>
+        <div class="mission__art" data-reveal><div class="frame"><pet-media :item="mission" /></div></div>
         <div data-reveal>
           <span class="eyebrow">nuestra misión</span>
-          <h2 class="h-lg">Ningún peludo debería dormir <span class="mark">lejos de su plato.</span></h2>
+          <h2 class="h-lg ttl" style="margin-top:8px">Ningún peludo debería dormir <span class="hl">lejos de su plato.</span><doodle name="fish" class="dd--br" /></h2>
           <p class="lead">Muchas mascotas se pierden en Santa Cruz por cohetes, portones abiertos o un descuido. Con ${BRAND}, todo el barrio se vuelve su red de búsqueda.</p>
           <div class="flex mt">
-            <span class="tag"><i style="--c:#4E8F4A"></i>{{ homeCount }} reencuentros</span>
-            <span class="tag"><i style="--c:#E8503E"></i>{{ lostCount }} buscando su casa</span>
+            <span class="tag"><i style="--c:var(--pastel)"></i>{{ homeCount }} reencuentros</span>
+            <span class="tag"><i style="--c:var(--ink)"></i>{{ lostCount }} buscando su casa</span>
           </div>
         </div>
       </div>
@@ -515,13 +547,14 @@ app.component('page-home', {
     <section class="section" style="padding-top:0">
       <div class="wrap">
         <div class="section__head">
-          <div><span class="eyebrow">¿por qué 4 patitas?</span><h2 class="h-lg">Hecha para encontrarlos pronto.</h2></div>
+          <span class="vlabel">por qué</span>
+          <div><span class="eyebrow">¿por qué 4 patitas?</span><br><h2 class="h-lg">Hecha para encontrarlos <span class="uline">pronto<doodle name="underline" class="dd--under" /></span>.<doodle name="sparkle" class="dd--tr" /></h2></div>
           <p class="lead" style="max-width:42ch">Los grupos de WhatsApp se llenan de mensajes y las alertas se pierden. Aquí cada alerta queda en el mapa, se cruza con las demás y llega a quien está cerca.</p>
         </div>
         <div class="features">
           <article class="feature feature--big" data-reveal>
             <div>
-              <div class="feature__ico" style="--c:#FFFFFF"><ico name="map" /></div>
+              <div class="feature__ico" style="--c:var(--paper)"><ico name="map" /></div>
               <h3 style="font-size:1.6rem">Mapa en vivo de toda la ciudad</h3>
               <p>Del Plan 3000 al Urubó: cada alerta queda en el punto exacto donde se perdió o se vio. Filtra por especie y por estado.</p>
               <a href="#/mapa" class="btn btn--primary btn--sm mt">Abrir mapa <ico name="arrow" /></a>
@@ -536,28 +569,27 @@ app.component('page-home', {
         </div>
         <div class="stats" data-reveal>
           <div class="stat"><b>24/7</b><span>mapa actualizado</span></div>
-          <div class="stat"><b data-count="15">15</b><span>barrios cubiertos</span></div>
+          <div class="stat"><b data-count="15">15</b><span>barrios</span></div>
           <div class="stat"><b data-count="5" data-suffix=" km">5 km</b><span>radio de alerta</span></div>
           <div class="stat"><b>Bs 0</b><span>siempre gratis</span></div>
         </div>
       </div>
     </section>
 
-    <!-- CÓMO FUNCIONA: cielo con nubes -->
+    <!-- CÓMO FUNCIONA: pastel con lunares -->
     <section class="how section">
-      <cloud v-for="(c,i) in clouds" :key="i" :style="{width:c.w+'px',top:c.top,left:c.left}" />
       <div class="how__scroller">
         <div class="how__track">
           <div class="how__intro">
             <span class="eyebrow">cómo funciona</span>
-            <h2 class="h-lg">De perdida a en casa, en 4 pasos.</h2>
+            <h2 class="h-lg ttl">De perdida a en casa, en 4 pasos.<doodle name="house" class="dd--tr" /></h2>
             <p>Desliza para ver cómo la comunidad trabaja para traerlos de vuelta.</p>
           </div>
-          <article v-for="(s,i) in steps" :key="s[2]" class="step" :style="{'--c-l':s[1]}">
-            <span class="step__n">paso {{ i+1 }}</span>
+          <article v-for="(s,i) in steps" :key="s[1]" class="step">
+            <span class="step__n">{{ i+1 }}</span>
             <div class="step__art"><ico :name="s[0]" /></div>
-            <h3>{{ s[2] }}</h3>
-            <p>{{ s[3] }}</p>
+            <h3>{{ s[1] }}</h3>
+            <p>{{ s[2] }}</p>
           </article>
         </div>
       </div>
@@ -567,7 +599,8 @@ app.component('page-home', {
     <section class="section">
       <div class="wrap">
         <div class="section__head">
-          <div><span class="eyebrow">la manada</span><h2 class="h-lg">Conoce a los vecinos.</h2></div>
+          <span class="vlabel">la manada</span>
+          <div><span class="eyebrow">los vecinos</span><br><h2 class="h-lg ttl">Conoce a la manada.<doodle name="paw" class="dd--tr" /></h2></div>
           <a href="#/comunidad?tab=perfiles" class="btn">Ver todos los perfiles <ico name="arrow" /></a>
         </div>
         <div class="pets-rail" data-lenis-prevent-wheel>
@@ -581,7 +614,7 @@ app.component('page-home', {
       <div class="frame" data-reveal><img :src="M('media/pets/coco.jpg')" alt="Coco, una dálmata, mirando la calle desde el balcón" loading="lazy"></div>
       <div data-reveal>
         <span class="eyebrow">su propia ficha</span>
-        <h2 class="h-lg" style="margin:6px 0 12px">Tu mascota merece <span class="mark">su propio perfil.</span></h2>
+        <h2 class="h-lg ttl" style="margin:8px 0 12px">Tu mascota merece su propio <span class="hl">perfil.</span><doodle name="bone" class="dd--br" style="width:1.3em" /></h2>
         <p class="lead">Fotos, señas, vacunas y un QR para el collar. Si algún día se pierde, su perfil se vuelve una alerta con un solo toque.</p>
         <a href="#/registrar" class="btn btn--primary mt"><ico name="paw" />Registrar a mi mascota</a>
       </div>
@@ -590,32 +623,38 @@ app.component('page-home', {
     <!-- COMPARATIVA -->
     <section class="section">
       <div class="wrap">
-        <div class="section__head"><div><span class="eyebrow">la diferencia</span><h2 class="h-lg">No es otro grupo de WhatsApp.</h2></div></div>
+        <div class="section__head">
+          <span class="vlabel">diferencia</span>
+          <div><span class="eyebrow">la diferencia</span><br><h2 class="h-lg ttl">No es otro grupo de WhatsApp.<doodle name="squiggle" class="dd--br" style="width:1.4em" /></h2></div>
+        </div>
         <div class="compare" data-reveal>
-          <div class="compare__row"><span></span><span>4 Patitas</span><span>Grupos y redes</span></div>
+          <div class="compare__row"><span></span><span>4 Patitas</span><span>Grupos</span></div>
           <div class="compare__row" v-for="c in ['Ubicación exacta en un mapa','Cruce automático perdido ↔ avistado','Alertas solo de tu zona','Perfil permanente con QR','Las alertas no se pierden entre mensajes']" :key="c">
-            <span>{{ c }}</span><span class="yes" aria-label="Sí"><ico name="check" /></span><span class="no" aria-label="No"><ico name="close" /></span>
+            <span>{{ c }}</span><span aria-label="Sí"><ico name="check" /></span><span aria-label="No"><ico name="close" /></span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- HISTORIAS: globos de diálogo -->
+    <!-- HISTORIAS -->
     <section class="section" style="padding-top:0">
       <div class="wrap">
-        <div class="section__head"><div><span class="eyebrow">reencuentros</span><h2 class="h-lg">Historias con final feliz.</h2></div></div>
+        <div class="section__head">
+          <span class="vlabel">historias</span>
+          <div><span class="eyebrow">reencuentros</span><br><h2 class="h-lg ttl">Historias con final feliz.<doodle name="heart" class="dd--tr" /></h2></div>
+        </div>
         <div class="quotes">
-          <blockquote class="quote" style="--c:#FFF39A" data-reveal><p>"Nube se escapó por el balcón. Una vecina la marcó en el mapa a 3 cuadras y en 2 días estaba en casa."</p><footer><span><ico name="cat" /></span><div><b>Andrés M.</b><br>Las Palmas</div></footer></blockquote>
-          <blockquote class="quote" style="--c:#DCEFFA" data-reveal><p>"Encontré un golden en el condominio y en una hora su familia me escribió por WhatsApp."</p><footer><span><ico name="dog" /></span><div><b>Mariela T.</b><br>Urubó</div></footer></blockquote>
-          <blockquote class="quote" style="--c:#E0EFDC" data-reveal><p>"Ahora todo el barrio tiene el perfil de sus perros. Es como un vecindario que se cuida."</p><footer><span><ico name="paw" /></span><div><b>Familia Rojas</b><br>Mutualista</div></footer></blockquote>
+          <blockquote class="quote" style="--c:var(--pastel)" data-reveal><p>"Nube se escapó por el balcón. Una vecina la marcó en el mapa a 3 cuadras y en 2 días estaba en casa."</p><footer><span><ico name="cat" /></span><div><b>Andrés M.</b> · Las Palmas</div></footer></blockquote>
+          <blockquote class="quote" style="--c:var(--paper)" data-reveal><p>"Encontré un golden en el condominio y en una hora su familia me escribió por WhatsApp."</p><footer><span><ico name="dog" /></span><div><b>Mariela T.</b> · Urubó</div></footer></blockquote>
+          <blockquote class="quote" style="--c:var(--pastel)" data-reveal><p>"Ahora todo el barrio tiene el perfil de sus perros. Es como un vecindario que se cuida."</p><footer><span><ico name="paw" /></span><div><b>Familia Rojas</b> · Mutualista</div></footer></blockquote>
         </div>
       </div>
     </section>
 
     <!-- PREGUNTAS -->
     <section class="section" style="padding-top:0">
-      <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px">
-        <div><span class="eyebrow">preguntas</span><h2 class="h-lg">Lo que nos preguntan.</h2></div>
+      <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:36px">
+        <div><span class="eyebrow">preguntas</span><br><h2 class="h-lg ttl">Lo que nos preguntan.<doodle name="cloud" class="dd--tr" style="width:1.2em" /></h2></div>
         <div class="faq">
           <details><summary>¿4 Patitas es gratis?</summary><p>Sí. Registrar mascotas, publicar alertas y usar el mapa es y será gratis para los dueños.</p></details>
           <details><summary>¿Qué hago si encuentro una mascota en la calle?</summary><p>Toca "Publicar", elige "La vi" o "La rescaté", marca el lugar en el mapa y sube una foto. Si coincide con una alerta, avisamos a su familia.</p></details>
@@ -628,16 +667,16 @@ app.component('page-home', {
     <!-- LLAMADO FINAL -->
     <section class="wrap">
       <div class="cta" data-reveal>
-        <div class="cta__copy">
+        <div>
           <span class="eyebrow">únete a la manada</span>
-          <h2 class="h-lg" style="margin-top:6px">Haz que tu barrio cuide a tu mascota.</h2>
+          <h2 class="h-lg ttl" style="margin-top:8px">Haz que tu barrio cuide a tu mascota.<doodle name="sun" class="dd--tr" /></h2>
           <p>Crea su perfil en un minuto. Si algún día se pierde, los vecinos estarán listos para ayudar.</p>
           <div class="flex">
             <a href="#/registrar" class="btn btn--primary">Crear perfil gratis</a>
-            <a href="#/mapa" class="btn">Ver el mapa</a>
+            <a href="#/mapa" class="btn" style="--bg:var(--paper)">Ver el mapa</a>
           </div>
         </div>
-        <div class="cta__art"><img :src="scene" alt="" loading="lazy"></div>
+        <div class="cta__art"><img :src="logo" alt="" loading="lazy"></div>
       </div>
     </section>
   </main>`,
@@ -714,7 +753,7 @@ app.component('page-map', {
     <div class="wrap">
       <div class="mapwrap">
         <aside class="mapside">
-          <div><span class="eyebrow">mapa en vivo<template v-if="status.online"> · <span class="live-dot"></span>conectado</template></span><h1 class="h-md" style="margin-top:6px">Santa Cruz de la Sierra</h1></div>
+          <div><span class="eyebrow">mapa en vivo<template v-if="status.online"> · <span class="live-dot"></span>conectado</template></span><h1 class="h-md ttl" style="margin-top:6px">Santa Cruz de la Sierra<doodle name="sparkle" class="dd--tr dd--small" /></h1></div>
           <label class="sr" for="q" style="position:absolute;left:-9999px">Buscar</label>
           <input id="q" class="input" v-model="f.q" placeholder="Buscar por nombre, raza, barrio o color">
           <div class="filters">
@@ -811,7 +850,7 @@ app.component('page-publish', {
     <div class="wrap">
       <header class="page__head">
         <span class="eyebrow">nueva alerta</span>
-        <h1 class="h-lg">Publica y deja que el barrio ayude.</h1>
+        <h1 class="h-lg ttl">Publica y deja que el <span class="uline">barrio<doodle name="underline" class="dd--under" /></span> ayude.<doodle name="sparkle" class="dd--tr" /></h1>
         <p class="lead">Mientras más detalles des, más fácil será reconocerla. Toma menos de un minuto.</p>
       </header>
       <div class="publish-layout">
@@ -885,7 +924,7 @@ app.component('page-community', {
     <div class="wrap">
       <header class="page__head">
         <span class="eyebrow">comunidad</span>
-        <h1 class="h-lg">La manada de Santa Cruz.</h1>
+        <h1 class="h-lg ttl">La manada de Santa Cruz.<doodle name="heart" class="dd--tr" /></h1>
       </header>
       <div class="flex feed-tabs" style="margin-bottom:22px" role="tablist">
         <button class="chip" role="tab" :aria-selected="tab==='muro'" :class="{on:tab==='muro'}" @click="tab='muro'"><ico name="chat" />Plaza</button>
@@ -966,7 +1005,7 @@ app.component('page-pet', {
         <div class="profile__media" :style="{'--accent':accentOf(pet.accent, pet.id)}"><pet-media :item="pet" /></div>
         <div class="profile__info">
           <span class="eyebrow"><ico :name="SPECIES[pet.species] || 'paw'" />{{ pet.breed }}<template v-if="pet.age"> · {{ pet.age }}</template></span>
-          <h1 class="h-xl" style="margin:8px 0">{{ pet.name }}</h1>
+          <h1 class="h-xl ttl" style="margin:8px 0">{{ pet.name }}<doodle name="heart" class="dd--tr" /></h1>
           <div v-if="pet.lost" class="flex" style="margin-bottom:12px"><type-tag type="perdido" /><span class="muted">Esta mascota está perdida. Ayuda a encontrarla.</span></div>
           <p class="lead">{{ pet.bio }}</p>
           <div class="profile__stats">
@@ -1099,7 +1138,7 @@ app.component('page-account', {
       <section v-else-if="!status.user" class="acct__join card">
         <img class="acct__logo" :src="M('media/logo.svg')" alt="" width="96" height="96">
         <span class="eyebrow">mi cuenta</span>
-        <h1 class="h-lg">Únete a la manada.</h1>
+        <h1 class="h-lg ttl">Únete a la manada.<doodle name="star" class="dd--tr" /></h1>
         <p class="lead">Ver el mapa y publicar no requiere cuenta. Con una cuenta, tus publicaciones te acompañan a todas partes.</p>
         <ul class="perks">
           <li v-for="p in perks" :key="p[1]"><span class="perks__ico"><ico :name="p[0]" /></span><div><b>{{ p[1] }}</b><p>{{ p[2] }}</p></div></li>
@@ -1186,7 +1225,7 @@ app.component('page-register', {
     <div class="wrap">
       <header class="page__head">
         <span class="eyebrow">mi mascota</span>
-        <h1 class="h-lg">Crea su perfil en un minuto.</h1>
+        <h1 class="h-lg ttl">Crea su perfil en un <span class="circled">minuto<doodle name="circle" /></span>.<doodle name="paw" class="dd--tr" /></h1>
         <p class="lead">Si algún día se pierde, su ficha ya estará lista para convertirse en alerta con un solo toque.</p>
       </header>
       <div class="publish-layout reg">
@@ -1267,7 +1306,7 @@ app.component('alert-modal', {
       <div class="modal__box" ref="box" data-lenis-prevent role="dialog" aria-modal="true" :aria-label="r.name">
         <button class="modal__x" @click="close" aria-label="Cerrar"><ico name="close" /></button>
         <!-- afiche: palabra gigante con la especie, como los carteles de "se busca" -->
-        <div class="poster" :style="{'--pc': r.type==='perdido' ? 'var(--poster)' : TYPES[r.type].color}">
+        <div class="poster" :class="{'poster--calm': r.type!=='perdido'}">
           <div class="poster__word" aria-hidden="true">{{ WORDS[r.species] || 'MASCOTA' }}</div>
           <div class="poster__title">{{ TYPES[r.type].word }}</div>
           <div class="poster__name">{{ r.name }} · {{ r.zone }}</div>

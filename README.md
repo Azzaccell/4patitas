@@ -46,12 +46,13 @@ Las reglas de seguridad (Row Level Security) se definen en `schema.sql`:
 
 ## Diseño
 
-Referencia general: la app japonesa Dokonoko (amarillo de marca, tinta negra plana, mucho blanco, fotos redondas, mosaico de fotos y afiches de "se busca").
+Diseño editorial japonés contemporáneo con ilustración vectorial minimalista hecha a mano alzada.
 
-- **Logo:** `media/logo.svg`, la gata calicó y el perro blanco de la ilustración original (`media/ilustracion.jpg`), redibujados como figuras planas recortadas, con sombreros de paja y pañuelos verdes. `media/logo-escena.svg` es la misma escena sin fondo, para la portada.
-- **Paleta:** amarillo `#FFE935`, amarillo afiche `#FFF700`, tinta `#1C1B19`, blanco, gris suave `#F6F5F1`, celeste `#A8DCF3` y los estados (rojo, naranja, celeste y verde).
-- **Tipografía:** M PLUS Rounded 1c para todo el texto y Yusei Magic para los toques a mano.
-- **Piezas:** barra superior amarilla, barra inferior blanca con íconos grises en el celular, plaza en mosaico, alertas como afiche amarillo y pines del mapa con la foto de la mascota.
+- **Logo:** `media/logo.svg`, las caras de la gata y el perro con sus sombreros de paja, dibujadas con un trazo de lápiz imperfecto (un filtro SVG deforma levemente la línea y una segunda pasada tenue simula repasar el dibujo), sobre un círculo pastel con lunares.
+- **Paleta:** papel `#FBFAF6`, tinta `#2A2723` y un único tono pastel plano `#F6E7A9` (con su versión clara `#FBF3D3`). "Perdido" se marca en tinta por ser lo más urgente.
+- **Tipografía:** Klee One (letra manuscrita de lápiz) para títulos y Zen Maru Gothic para el texto.
+- **Soporte gráfico:** círculos, lunares repetidos, filetes finos y etiquetas verticales, como en las revistas japonesas.
+- **Garabatos en los títulos:** `DOODLES` en `js/app.js` (subrayados, círculos alrededor de palabras, corazones, destellos, huellas, casitas, nubes…), con el mismo trazo de lápiz.
 
 ## Stack
 
