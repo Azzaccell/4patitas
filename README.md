@@ -46,11 +46,12 @@ Las reglas de seguridad (Row Level Security) se definen en `schema.sql`:
 
 ## Diseño
 
-Estilo de libro ilustrado a línea, tomado de la ilustración de portada (`media/ilustracion.jpg`):
+Referencia general: la app japonesa Dokonoko (amarillo de marca, tinta negra plana, mucho blanco, fotos redondas, mosaico de fotos y afiches de "se busca").
 
-- **Paleta:** papel `#F6F5E3`, tinta `#272016`, paja `#EEDDB9`, salvia `#7A9270`, damasco `#E2AD8E` y piedra `#9E9A8E`.
-- **Tipografía:** Quicksand para los títulos (trazo redondeado y parejo como el dibujo), Nunito para el texto y Caveat para las notas a mano.
-- **Formas:** todo se dibuja con el mismo trazo de tinta de 1.75 px, con rellenos planos y sin sombras difusas. Los íconos son SVG de línea (`ICONS` en `js/app.js`).
+- **Logo:** `media/logo.svg`, la gata calicó y el perro blanco de la ilustración original (`media/ilustracion.jpg`), redibujados como figuras planas recortadas, con sombreros de paja y pañuelos verdes. `media/logo-escena.svg` es la misma escena sin fondo, para la portada.
+- **Paleta:** amarillo `#FFE935`, amarillo afiche `#FFF700`, tinta `#1C1B19`, blanco, gris suave `#F6F5F1`, celeste `#A8DCF3` y los estados (rojo, naranja, celeste y verde).
+- **Tipografía:** M PLUS Rounded 1c para todo el texto y Yusei Magic para los toques a mano.
+- **Piezas:** barra superior amarilla, barra inferior blanca con íconos grises en el celular, plaza en mosaico, alertas como afiche amarillo y pines del mapa con la foto de la mascota.
 
 ## Stack
 

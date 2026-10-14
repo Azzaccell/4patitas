@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 4 Patitas: gata calicó y perro blanco con sombrero de paja y pañuelo verde,
+       uno frente al otro. Formas planas recortadas, sin contornos, sobre amarillo. -->
+  <defs>
+    <clipPath id="t4"><rect width="512" height="512" rx="116"/></clipPath>
+    <clipPath id="g4"><path d="M-20 600 L-20 380 C-10 320 20 285 55 270 L50 192 L100 244 C120 236 142 234 160 238 L198 196 L204 262 C222 286 226 318 214 340 C204 360 184 368 172 372 C176 430 180 520 182 600 Z"/></clipPath>
+  </defs>
+  <g clip-path="url(#t4)">
+    <rect width="512" height="512" fill="#FFE935"/>
+    <g transform="translate(0 -34)">
+
+    <!-- perro: mira a la izquierda -->
+    <path fill="#FFFFFF" d="M600 600 L600 300 C515 240 485 200 440 184 C400 170 360 176 336 196 C318 212 308 234 292 246 C276 256 262 264 256 280 C250 296 256 316 272 322 C296 332 322 334 342 340 C352 344 356 360 352 390 C346 450 340 520 338 600 Z"/>
+    <path fill="#ECE8D9" d="M424 206 C454 214 474 252 470 304 C468 336 450 354 432 348 C416 314 410 258 424 206 Z"/>
+    <ellipse cx="261" cy="285" rx="15" ry="12" fill="#1C1B19"/>
+    <circle cx="332" cy="244" r="10.5" fill="#1C1B19"/>
+    <circle cx="335.5" cy="240.5" r="3.4" fill="#FFFFFF"/>
+    <path d="M278 322 C298 330 318 330 338 326" fill="none" stroke="#1C1B19" stroke-width="5.5" stroke-linecap="round"/>
+    <path fill="#4E8F4A" d="M352 398 C410 414 476 410 600 392 L600 446 C520 458 452 462 414 460 L370 522 L352 518 C354 478 355 440 352 398 Z"/>
+    <circle cx="372" cy="430" r="13" fill="#3F7A3C"/>
+    <path fill="#E9C46E" d="M350 182 C350 130 378 104 412 104 C450 104 470 134 468 178 Z"/>
+    <path fill="#1C1B19" d="M351 166 C390 158 430 156 468 162 L468 178 C430 172 390 174 351 184 Z"/>
+    <ellipse cx="410" cy="184" rx="120" ry="24" transform="rotate(-6 410 184)" fill="#F2D68C"/>
+    <path d="M304 194 C344 186 384 182 424 182 M326 202 C366 196 406 193 452 192" fill="none" stroke="#D9B45C" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- gata: mira a la derecha -->
+    <path fill="#FFFFFF" d="M-20 600 L-20 380 C-10 320 20 285 55 270 L50 192 L100 244 C120 236 142 234 160 238 L198 196 L204 262 C222 286 226 318 214 340 C204 360 184 368 172 372 C176 430 180 520 182 600 Z"/>
+    <g clip-path="url(#g4)">
+      <ellipse cx="44" cy="250" rx="66" ry="62" fill="#1C1B19"/>
+      <ellipse cx="60" cy="364" rx="54" ry="40" fill="#F2A35E"/>
+      <ellipse cx="10" cy="480" rx="56" ry="44" fill="#1C1B19"/>
+      <ellipse cx="140" cy="486" rx="34" ry="28" fill="#F2A35E"/>
+    </g>
+    <circle cx="172" cy="290" r="9" fill="#1C1B19"/>
+    <circle cx="175.3" cy="286.7" r="2.9" fill="#FFFFFF"/>
+    <path d="M206 312 L219 314 L211 324 Z" fill="#E98F84"/>
+    <path d="M211 326 C206 334 196 336 188 332" fill="none" stroke="#1C1B19" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M198 318 L238 310 M198 328 L240 332" fill="none" stroke="#1C1B19" stroke-width="3.4" stroke-linecap="round"/>
+    <path fill="#4E8F4A" d="M-20 410 C40 398 100 392 166 388 C168 402 170 416 172 430 C110 434 50 442 -20 456 Z"/>
+    <path fill="#4E8F4A" d="M150 394 L200 412 L178 462 L158 426 Z"/>
+    <circle cx="160" cy="408" r="12" fill="#3F7A3C"/>
+    <path fill="#E9C46E" d="M46 234 C48 192 70 170 100 170 C132 170 150 194 148 232 Z"/>
+    <path fill="#1C1B19" d="M47 220 C80 212 116 210 148 216 L148 232 C116 226 80 228 47 236 Z"/>
+    <ellipse cx="96" cy="236" rx="90" ry="19" transform="rotate(5 96 236)" fill="#F2D68C"/>
+    <path d="M18 236 C50 232 82 234 120 240 M34 246 C72 244 110 246 152 252" fill="none" stroke="#D9B45C" stroke-width="3.4" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

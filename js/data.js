@@ -12,14 +12,14 @@ window.HUELLAS = (() => {
 
   // color: relleno del pin y del punto de estado; icon: nombre del ícono de línea (ver ICONS en app.js)
   const TYPES = {
-    perdido: { label: 'Perdido', color: '#E2AD8E', dot: '#B9694A', icon: 'megaphone', verb: 'se perdió en' },
-    visto: { label: 'Avistado', color: '#EEDDB9', dot: '#C99A3E', icon: 'eye', verb: 'fue visto en' },
-    encontrado: { label: 'Rescatado', color: '#E2DFD2', dot: '#8C887B', icon: 'home', verb: 'está resguardado en' },
-    reunido: { label: 'Reunido', color: '#DCE3D1', dot: '#56704D', icon: 'heart', verb: 'volvió a casa en' },
+    perdido: { label: 'Perdido', color: '#FFE1DC', dot: '#E8503E', icon: 'megaphone', verb: 'se perdió en', word: 'SE BUSCA' },
+    visto: { label: 'Avistado', color: '#FFEBCC', dot: '#FF9A3C', icon: 'eye', verb: 'fue visto en', word: 'LO VIMOS' },
+    encontrado: { label: 'Rescatado', color: '#DCEFFA', dot: '#3FA9E0', icon: 'home', verb: 'está resguardado en', word: 'BUSCA SU CASA' },
+    reunido: { label: 'Reunido', color: '#E0EFDC', dot: '#4E8F4A', icon: 'heart', verb: 'volvió a casa en', word: '¡EN CASA!' },
   };
   const SPECIES = { perro: 'dog', gato: 'cat', ave: 'bird', conejo: 'rabbit', otro: 'paw' };
-  // Colores de perfil: rellenos de la ilustración. Los colores viejos se traducen a esta paleta.
-  const ACCENTS = ['#EEDDB9', '#DCE3D1', '#F5DCCB', '#E2DFD2', '#E9E2C6'];
+  // Colores de perfil: pasteles de la marca (amarillo, celeste, rosa, verde, gris). Los colores viejos se traducen a esta paleta.
+  const ACCENTS = ['#FFF39A', '#DCEFFA', '#FFE1DC', '#E0EFDC', '#EEEDE8'];
   const accentOf = (hex, id = '') => ACCENTS.includes(hex) ? hex : ACCENTS[[...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0) % ACCENTS.length];
 
   const ago = h => Date.now() - h * 3600e3;

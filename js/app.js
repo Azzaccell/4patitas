@@ -175,9 +175,11 @@ addEventListener('pointerdown', e => {
 // Teselas de OpenStreetMap (gratis, sin API key); el tono sepia se da con filtros CSS
 const TILE = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+const esc = s => String(s || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const pinIcon = r => L.divIcon({
-  className: '', iconSize: [42, 42], iconAnchor: [21, 50], popupAnchor: [0, -46],
-  html: `<div class="pin ${r.type === 'perdido' ? 'pulse' : ''}" style="--c:${TYPES[r.type].color}"><svg viewBox="0 0 24 24">${ICONS[SPECIES[r.species]] || ICONS.paw}</svg></div>`,
+  className: '', iconSize: [46, 46], iconAnchor: [23, 56], popupAnchor: [0, -52],
+  html: `<div class="pin ${r.type === 'perdido' ? 'pulse' : ''}" style="--c:${TYPES[r.type].dot};--t:${TYPES[r.type].color}">${
+    r.photo ? `<img src="${esc(M(r.photo))}" alt="">` : `<span class="pin__ico"><svg viewBox="0 0 24 24">${ICONS[SPECIES[r.species]] || ICONS.paw}</svg></span>`}</div>`,
 });
 // Mapa vectorial propio de Santa Cruz (anillos, radiales, río Piraí, barrios) si las teselas no cargan.
 // ?mapa=dibujo fuerza el mapa dibujado (útil para revisar la versión compartible)
@@ -190,14 +192,14 @@ const offset = ([lat, lng], m, deg) => {
 };
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function drawCity(map, { labels = true } = {}) {
-  const ink = cssVar('--ink'), soft = cssVar('--stone');
+  const ink = cssVar('--ink'), soft = cssVar('--line-2');
   RADIALS.forEach(deg => L.polyline([offset(CENTER, 300, deg), offset(CENTER, 9600, deg)], { color: soft, weight: 1.5, interactive: false }).addTo(map));
   RINGS.forEach(([name, m], i) => {
     L.circle(CENTER, { radius: m, color: ink, weight: i < 4 ? 1.75 : 1.2, opacity: .8, fill: false, interactive: false }).addTo(map);
     if (labels) L.marker(offset(CENTER, m, 0), { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<div class="ring-label">${name} anillo</div>` }) }).addTo(map);
   });
-  L.polyline([[-17.70, -63.215], [-17.73, -63.222], [-17.76, -63.214], [-17.79, -63.221], [-17.82, -63.214], [-17.86, -63.222]], { color: cssVar('--sage'), weight: 6, opacity: .7, lineCap: 'round', interactive: false }).addTo(map);
-  L.circleMarker(CENTER, { radius: 6, color: ink, fillColor: cssVar('--apricot'), fillOpacity: 1, weight: 1.75, interactive: false }).addTo(map);
+  L.polyline([[-17.70, -63.215], [-17.73, -63.222], [-17.76, -63.214], [-17.79, -63.221], [-17.82, -63.214], [-17.86, -63.222]], { color: cssVar('--sky-d'), weight: 7, opacity: .6, lineCap: 'round', interactive: false }).addTo(map);
+  L.circleMarker(CENTER, { radius: 6, color: ink, fillColor: cssVar('--yellow'), fillOpacity: 1, weight: 1.75, interactive: false }).addTo(map);
   if (labels) Object.entries(ZONES).forEach(([z, ll]) => L.marker(ll, { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: `<div class="zone-label">${z}</div>` }) }).addTo(map));
   if (labels) L.marker([-17.775, -63.227], { interactive: false, icon: L.divIcon({ className: '', iconSize: [0, 0], html: '<div class="river-label">río Piraí</div>' }) }).addTo(map);
 }
@@ -228,12 +230,10 @@ const app = createApp({
     const leave = (el, done) => {
       if (reduced) return done();
       const c = curtain.value;
-      const strokes = c.querySelectorAll('.curtain__paw ellipse');
       gsap.timeline({ onComplete: done })
         .set(c, { visibility: 'visible' })
-        .set(strokes, { strokeDasharray: 40, strokeDashoffset: 40 })
         .fromTo(c.querySelectorAll('.curtain__panel'), { scaleY: 0, transformOrigin: 'bottom' }, { scaleY: 1, duration: .5, ease: 'expo.inOut', stagger: .07 })
-        .to(strokes, { strokeDashoffset: 0, duration: .45, ease: 'power2.out', stagger: .05 }, '-=.15')
+        .fromTo(c.querySelector('.curtain__logo'), { scale: .4, rotate: -12, opacity: 0 }, { scale: 1, rotate: 0, opacity: 1, duration: .5, ease: 'back.out(2)' }, '-=.2')
         .fromTo(c.querySelector('.curtain__word'), { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: .3 }, '<')
         .to(el, { opacity: 0, duration: .3 }, 0);
     };
@@ -242,12 +242,12 @@ const app = createApp({
       if (first || reduced) { first = false; ScrollTrigger.refresh(); return done(); }
       const c = curtain.value;
       gsap.timeline({ onComplete: () => { gsap.set(c, { visibility: 'hidden' }); ScrollTrigger.refresh(); done(); } })
-        .to(c.querySelectorAll('.curtain__paw, .curtain__word'), { opacity: 0, y: -10, duration: .25, ease: 'power2.in' })
+        .to(c.querySelectorAll('.curtain__logo, .curtain__word'), { opacity: 0, y: -10, duration: .25, ease: 'power2.in' })
         .to([...c.querySelectorAll('.curtain__panel')].reverse(), { scaleY: 0, transformOrigin: 'top', duration: .55, ease: 'expo.inOut', stagger: .07 }, '-=.05')
-        .set(c.querySelectorAll('.curtain__paw, .curtain__word'), { opacity: 1, y: 0 })
+        .set(c.querySelectorAll('.curtain__logo, .curtain__word'), { opacity: 1, y: 0 })
         .fromTo(el, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .7, ease: 'power3.out', clearProps: 'transform,opacity' }, '-=.4');
     };
-    return { route, ui, curtain, leave, enter, closeAlert, ICONS };
+    return { route, ui, curtain, leave, enter, closeAlert, ICONS, logo: M('media/logo.svg') };
   },
   template: `
     <site-nav />
@@ -259,7 +259,7 @@ const app = createApp({
     <div class="curtain" ref="curtain" aria-hidden="true">
       <div class="curtain__panel curtain__panel--2"></div>
       <div class="curtain__panel"></div>
-      <div class="curtain__paw"><svg viewBox="0 0 24 24" v-html="ICONS.paw"></svg></div>
+      <img class="curtain__logo" :src="logo" alt="">
       <div class="curtain__word">un momentito…</div>
     </div>
     <transition name="fade"><alert-modal v-if="ui.modal" :id="ui.modal" @close="closeAlert" /></transition>
@@ -273,8 +273,10 @@ app.component('ico', {
   setup: () => ({ ICONS }),
   template: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" v-html="ICONS[name] || ICONS.paw"></svg>`,
 });
+const LOGO = () => M('media/logo.svg');
 app.component('brand', {
-  template: `<a href="#/" class="brand" aria-label="${BRAND}, inicio"><span class="brand__mark"><ico name="paw" /></span><span><b>4</b> patitas</span></a>`,
+  setup: () => ({ LOGO }),
+  template: `<a href="#/" class="brand" aria-label="${BRAND}, inicio"><img class="brand__mark" :src="LOGO()" alt="" width="42" height="42"><span>4 patitas</span></a>`,
 });
 app.component('cloud', {
   setup: () => ({ CLOUD }),
@@ -403,34 +405,31 @@ app.component('page-home', {
     const byId = (...ids) => ids.map(id => state.pets.find(p => p.id === id)).filter(Boolean);
     const faces = computed(() => byId('p8', 'p12', 'p11', 'p13'));
     const mission = LITE ? { photo: 'media/pets/golden.jpg', name: 'Golden' } : { video: 'media/v3.mp4', name: 'Tigre' };
-    const art = M('media/ilustracion.jpg');
+    const scene = M('media/logo-escena.svg');
     let map;
 
     usePageFx(root, () => {
-      intro('.story', { y: 14, opacity: 0, duration: .6, ease: 'power3.out', stagger: .04, delay: .1 });
-      gsap.from('.hero h1 .line>span', { yPercent: 110, duration: 1.1, ease: 'expo.out', stagger: .09, delay: .15 });
-      drawLines('.hero .underline path', { delay: .9 });
-      intro('.hero .lead, .hero__cta > *, .hero__proof', { y: 18, opacity: 0, duration: .9, ease: 'power3.out', stagger: .07, delay: .45 });
-      intro('.hero__art img', { y: 24, opacity: 0, duration: 1.4, ease: 'power3.out', delay: .25 });
-      drawLines('.hero__art .note path', { delay: 1.4, duration: .8 });
-      // nubes que flotan despacio, como en la ilustración
-      gsap.utils.toArray('.hero__art .cloud').forEach((c, i) => gsap.to(c, { x: i % 2 ? -26 : 30, duration: 9 + i * 3, repeat: -1, yoyo: true, ease: 'sine.inOut' }));
-      gsap.to('.hero__art img', { yPercent: -6, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+      gsap.from('.hero h1 .line>span', { yPercent: 110, duration: 1, ease: 'expo.out', stagger: .08, delay: .1 });
+      intro('.hero .lead, .hero__cta > *, .hero__proof', { y: 16, opacity: 0, duration: .8, ease: 'power3.out', stagger: .06, delay: .4 });
+      // la gata y el perro asoman desde abajo de la franja amarilla
+      intro('.hero__art img', { y: 120, duration: 1.1, ease: 'back.out(1.4)', delay: .2 });
+      intro('.bubble', { scale: .6, opacity: 0, duration: .5, ease: 'back.out(2.4)', stagger: .25, delay: 1.1 });
+      gsap.utils.toArray('.bubble').forEach((b, i) => gsap.to(b, { y: i ? 6 : -6, duration: 2.4 + i * .5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1.8 }));
+      intro('.story', { y: 12, opacity: 0, duration: .5, ease: 'power3.out', stagger: .03, delay: .3 });
+      // nubes que cruzan el cielo de "cómo funciona"
+      gsap.utils.toArray('.how .cloud').forEach((c, i) => gsap.to(c, { x: i % 2 ? -50 : 60, duration: 12 + i * 4, repeat: -1, yoyo: true, ease: 'sine.inOut' }));
 
-      // contadores
       gsap.utils.toArray('[data-count]').forEach(el => {
         const o = { v: 0 }, end = +el.dataset.count;
-        gsap.to(o, { v: end, duration: 1.8, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%' }, onUpdate: () => (el.textContent = Math.round(o.v) + (el.dataset.suffix || '')) });
+        gsap.to(o, { v: end, duration: 1.6, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%' }, onUpdate: () => (el.textContent = Math.round(o.v) + (el.dataset.suffix || '')) });
       });
-
-      // "Cómo funciona": recorrido horizontal fijado (solo escritorio)
       gsap.matchMedia().add('(min-width: 721px)', () => {
         const track = document.querySelector('.how__track');
         const dist = () => track.scrollWidth - innerWidth;
         gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '.how', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
       });
       drawLines('.step__art .ico *', { scrollTrigger: { trigger: '.how', start: 'top 70%' }, stagger: .02 });
-      gsap.fromTo('.identity .frame img', { scale: 1.08 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '.identity', scrub: true } });
+      intro('.cta__art img', { y: 80, duration: 1, ease: 'back.out(1.4)', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
     });
 
     onMounted(() => {
@@ -441,38 +440,30 @@ app.component('page-home', {
     onBeforeUnmount(() => map && map.remove());
 
     const features = [
-      ['spark', 'var(--apricot-l)', 'Coincidencias automáticas', 'Si alguien ve un perrito parecido cerca de donde se perdió el tuyo, la app los conecta por especie, color y distancia.'],
-      ['qr', 'var(--straw)', 'Perfil con QR', 'Cada mascota tiene su ficha con fotos, señas y un QR para el collar. Quien la encuentre te avisa en un toque.'],
-      ['bell', 'var(--stone-l)', 'Alertas por barrio', 'Lo que pasa a tu alrededor primero. Una alerta nueva llega a los vecinos en un radio de 5 km.'],
-      ['leaf', 'var(--straw)', 'Liviana y gratis', 'Funciona desde el navegador del celular, sin descargas. Publicar una alerta toma menos de un minuto.'],
+      ['spark', '#FFE1DC', 'Coincidencias automáticas', 'Si alguien ve un perrito parecido cerca de donde se perdió el tuyo, la app los conecta por especie, color y distancia.'],
+      ['qr', '#DCEFFA', 'Perfil con QR', 'Cada mascota tiene su ficha con fotos, señas y un QR para el collar. Quien la encuentre te avisa en un toque.'],
+      ['bell', '#FFEBCC', 'Alertas por barrio', 'Lo que pasa a tu alrededor, primero. Una alerta nueva llega a los vecinos en un radio de 5 km.'],
+      ['leaf', '#E0EFDC', 'Liviana y gratis', 'Funciona desde el navegador del celular, sin descargas. Publicar una alerta toma menos de un minuto.'],
     ];
     const steps = [
-      ['camera', '#C99A3E', 'var(--straw)', 'Crea su perfil', 'Sube fotos, señas particulares, chip y vacunas. Si algún día se pierde, todo ya está listo.'],
-      ['megaphone', '#B9694A', 'var(--apricot-l)', 'Activa la alerta', 'Con un toque marcas dónde y cuándo se perdió. Su perfil se convierte en un afiche.'],
-      ['users', '#8C887B', 'var(--stone-l)', 'El barrio se activa', 'Los vecinos cercanos ven la alerta y marcan en el mapa dónde la vieron.'],
-      ['heart', '#56704D', 'var(--sage-l)', 'Reencuentro', 'Te avisamos de cada coincidencia, hablas directo por WhatsApp y celebras con la comunidad.'],
+      ['camera', '#FFF39A', 'Crea su perfil', 'Sube fotos, señas particulares, chip y vacunas. Si algún día se pierde, todo ya está listo.'],
+      ['megaphone', '#FFE1DC', 'Activa la alerta', 'Con un toque marcas dónde y cuándo se perdió. Su perfil se convierte en un afiche.'],
+      ['users', '#DCEFFA', 'El barrio se activa', 'Los vecinos cercanos ven la alerta y marcan en el mapa dónde la vieron.'],
+      ['heart', '#E0EFDC', 'Reencuentro', 'Te avisamos de cada coincidencia, hablas directo por WhatsApp y celebras con la comunidad.'],
     ];
-    return { root, mini, pets, lostCount, homeCount, faces, mission, art, state, features, steps, M };
+    const clouds = [{ w: 150, top: '10%', left: '6%' }, { w: 100, top: '62%', left: '38%' }, { w: 190, top: '18%', left: '64%' }, { w: 120, top: '74%', left: '84%' }];
+    return { root, mini, pets, lostCount, homeCount, faces, mission, scene, state, features, steps, clouds, M };
   },
   template: `
   <main ref="root">
-    <!-- HERO: la ilustración es la portada -->
+    <!-- PORTADA: franja amarilla, la gata y el perro asoman desde abajo -->
     <section class="hero">
-      <div class="wrap">
-        <div class="stories" aria-label="Mascotas de la comunidad">
-          <a href="#/registrar" class="story story--add"><span class="story__ring"><ico name="plus" /></span><small>Tu mascota</small></a>
-          <a v-for="p in pets" :key="p.id" :href="'#/mascota/'+p.id" class="story">
-            <span class="story__ring" :class="{lost:p.lost}"><pet-media :item="p" /></span>
-            <small>{{ p.name }}</small>
-          </a>
-        </div>
-      </div>
       <div class="wrap hero__grid">
-        <div>
+        <div class="hero__copy">
           <span class="eyebrow"><ico name="pin" />Santa Cruz de la Sierra</span>
           <h1 class="h-xl">
             <span class="line"><span>Cada patita</span></span>
-            <span class="line"><span>vuelve a <span class="hand underline">casa.<svg viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M4 13c40-9 115-11 192-2"/></svg></span></span></span>
+            <span class="line"><span>vuelve a casa.</span></span>
           </h1>
           <p class="lead">La red de vecinos que cuida a las mascotas de Santa Cruz. Registra a la tuya, marca en el mapa a las que se perdieron y ayuda a que vuelvan con su familia en horas, no semanas.</p>
           <div class="hero__cta">
@@ -481,21 +472,28 @@ app.component('page-home', {
           </div>
           <div class="hero__proof">
             <div class="avatars"><span v-for="p in faces" :key="p.id"><pet-media :item="p" /></span></div>
-            <span><b>{{ state.pets.length }} mascotas</b> en la manada · <b>{{ lostCount }} alertas activas</b></span>
+            <span><b>{{ state.pets.length }} mascotas</b> en la manada · <b>{{ lostCount }} alertas</b></span>
           </div>
         </div>
         <div class="hero__art">
-          <cloud style="width:13%;top:4%;left:4%" />
-          <cloud style="width:9%;top:30%;right:0" />
-          <img :src="art" alt="Dibujo a línea de una gata calicó y un perro blanco con sombreros de paja y pañuelos verdes" width="1448" height="1086">
-          <div class="note" style="left:2%;bottom:16%">listos para<br>volver a casa
-            <svg viewBox="0 0 46 38"><path d="M2 30c10 4 26 3 38-14M33 13l8 2-2 8"/></svg>
-          </div>
+          <img :src="scene" alt="Dibujo de una gata calicó y un perro blanco con sombreros de paja y pañuelos verdes, mirándose" width="512" height="512">
+          <div class="bubble" style="top:6%;left:2%;--tail:30px">¿Lo has visto?<small>Toby · Equipetrol</small></div>
+          <div class="bubble" style="top:2%;right:4%;--tail:calc(100% - 48px)">¡Ya volví!<small>Nube · Las Palmas</small></div>
         </div>
       </div>
     </section>
 
-    <ground />
+    <!-- vecinos de la zona -->
+    <div class="bar"><div class="wrap"><span>Vecinos de la manada</span><a href="#/comunidad?tab=perfiles">ver todos <ico name="arrow" /></a></div></div>
+    <div class="wrap">
+      <div class="stories" aria-label="Mascotas de la comunidad">
+        <a href="#/registrar" class="story story--add"><span class="story__ring"><ico name="plus" /></span><small>Tu mascota</small></a>
+        <a v-for="p in pets" :key="p.id" :href="'#/mascota/'+p.id" class="story">
+          <span class="story__ring" :class="{lost:p.lost}"><pet-media :item="p" /></span>
+          <small>{{ p.name }}</small>
+        </a>
+      </div>
+    </div>
 
     <!-- MISIÓN -->
     <section class="section">
@@ -503,22 +501,18 @@ app.component('page-home', {
         <div class="frame" data-reveal><pet-media :item="mission" /></div>
         <div data-reveal>
           <span class="eyebrow">nuestra misión</span>
-          <h2 class="h-lg" style="margin-top:8px">Ningún peludo debería dormir lejos de su plato.</h2>
+          <h2 class="h-lg">Ningún peludo debería dormir <span class="mark">lejos de su plato.</span></h2>
           <p class="lead">Muchas mascotas se pierden en Santa Cruz por cohetes, portones abiertos o un descuido. Con ${BRAND}, todo el barrio se vuelve su red de búsqueda.</p>
           <div class="flex mt">
-            <span class="tag"><i style="--c:#56704D"></i>{{ homeCount }} reencuentros</span>
-            <span class="tag"><i style="--c:#B9694A"></i>{{ lostCount }} buscando su casa</span>
+            <span class="tag"><i style="--c:#4E8F4A"></i>{{ homeCount }} reencuentros</span>
+            <span class="tag"><i style="--c:#E8503E"></i>{{ lostCount }} buscando su casa</span>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="ribbon" aria-hidden="true"><div class="ribbon__track">
-      <span v-for="n in 2" :key="n">Registra <ico name="paw" /> Reporta <ico name="paw" /> Encuentra <ico name="paw" /> Reúne <ico name="paw" /> Adopta <ico name="paw" /> Comparte <ico name="paw" /></span>
-    </div></div>
-
     <!-- POR QUÉ -->
-    <section class="section">
+    <section class="section" style="padding-top:0">
       <div class="wrap">
         <div class="section__head">
           <div><span class="eyebrow">¿por qué 4 patitas?</span><h2 class="h-lg">Hecha para encontrarlos pronto.</h2></div>
@@ -527,10 +521,10 @@ app.component('page-home', {
         <div class="features">
           <article class="feature feature--big" data-reveal>
             <div>
-              <div class="feature__ico" style="--c:var(--card)"><ico name="map" /></div>
-              <h3 style="font-size:1.9rem">Mapa en vivo de toda la ciudad</h3>
+              <div class="feature__ico" style="--c:#FFFFFF"><ico name="map" /></div>
+              <h3 style="font-size:1.6rem">Mapa en vivo de toda la ciudad</h3>
               <p>Del Plan 3000 al Urubó: cada alerta queda en el punto exacto donde se perdió o se vio. Filtra por especie y por estado.</p>
-              <a href="#/mapa" class="btn btn--sm mt">Abrir mapa <ico name="arrow" /></a>
+              <a href="#/mapa" class="btn btn--primary btn--sm mt">Abrir mapa <ico name="arrow" /></a>
             </div>
             <div class="mini-map" ref="mini"></div>
           </article>
@@ -549,8 +543,9 @@ app.component('page-home', {
       </div>
     </section>
 
-    <!-- CÓMO FUNCIONA -->
+    <!-- CÓMO FUNCIONA: cielo con nubes -->
     <section class="how section">
+      <cloud v-for="(c,i) in clouds" :key="i" :style="{width:c.w+'px',top:c.top,left:c.left}" />
       <div class="how__scroller">
         <div class="how__track">
           <div class="how__intro">
@@ -558,11 +553,11 @@ app.component('page-home', {
             <h2 class="h-lg">De perdida a en casa, en 4 pasos.</h2>
             <p>Desliza para ver cómo la comunidad trabaja para traerlos de vuelta.</p>
           </div>
-          <article v-for="(s,i) in steps" :key="s[3]" class="step" :style="{'--c':s[1],'--c-l':s[2]}">
+          <article v-for="(s,i) in steps" :key="s[2]" class="step" :style="{'--c-l':s[1]}">
             <span class="step__n">paso {{ i+1 }}</span>
             <div class="step__art"><ico :name="s[0]" /></div>
-            <h3>{{ s[3] }}</h3>
-            <p>{{ s[4] }}</p>
+            <h3>{{ s[2] }}</h3>
+            <p>{{ s[3] }}</p>
           </article>
         </div>
       </div>
@@ -586,7 +581,7 @@ app.component('page-home', {
       <div class="frame" data-reveal><img :src="M('media/pets/coco.jpg')" alt="Coco, una dálmata, mirando la calle desde el balcón" loading="lazy"></div>
       <div data-reveal>
         <span class="eyebrow">su propia ficha</span>
-        <h2 class="h-lg" style="margin:8px 0 14px">Tu mascota merece su propio perfil.</h2>
+        <h2 class="h-lg" style="margin:6px 0 12px">Tu mascota merece <span class="mark">su propio perfil.</span></h2>
         <p class="lead">Fotos, señas, vacunas y un QR para el collar. Si algún día se pierde, su perfil se vuelve una alerta con un solo toque.</p>
         <a href="#/registrar" class="btn btn--primary mt"><ico name="paw" />Registrar a mi mascota</a>
       </div>
@@ -605,21 +600,21 @@ app.component('page-home', {
       </div>
     </section>
 
-    <!-- HISTORIAS -->
+    <!-- HISTORIAS: globos de diálogo -->
     <section class="section" style="padding-top:0">
       <div class="wrap">
         <div class="section__head"><div><span class="eyebrow">reencuentros</span><h2 class="h-lg">Historias con final feliz.</h2></div></div>
         <div class="quotes">
-          <blockquote class="quote" style="--c:var(--apricot-l)" data-reveal><p>"Nube se escapó por el balcón. Una vecina la marcó en el mapa a 3 cuadras y en 2 días estaba en casa."</p><footer><span><ico name="cat" /></span><div><b>Andrés M.</b><br>Las Palmas</div></footer></blockquote>
-          <blockquote class="quote" style="--c:var(--straw)" data-reveal><p>"Encontré un golden en el condominio y en una hora su familia me escribió por WhatsApp."</p><footer><span><ico name="dog" /></span><div><b>Mariela T.</b><br>Urubó</div></footer></blockquote>
-          <blockquote class="quote" style="--c:var(--sage-l)" data-reveal><p>"Ahora todo el barrio tiene el perfil de sus perros. Es como un vecindario que se cuida."</p><footer><span><ico name="paw" /></span><div><b>Familia Rojas</b><br>Mutualista</div></footer></blockquote>
+          <blockquote class="quote" style="--c:#FFF39A" data-reveal><p>"Nube se escapó por el balcón. Una vecina la marcó en el mapa a 3 cuadras y en 2 días estaba en casa."</p><footer><span><ico name="cat" /></span><div><b>Andrés M.</b><br>Las Palmas</div></footer></blockquote>
+          <blockquote class="quote" style="--c:#DCEFFA" data-reveal><p>"Encontré un golden en el condominio y en una hora su familia me escribió por WhatsApp."</p><footer><span><ico name="dog" /></span><div><b>Mariela T.</b><br>Urubó</div></footer></blockquote>
+          <blockquote class="quote" style="--c:#E0EFDC" data-reveal><p>"Ahora todo el barrio tiene el perfil de sus perros. Es como un vecindario que se cuida."</p><footer><span><ico name="paw" /></span><div><b>Familia Rojas</b><br>Mutualista</div></footer></blockquote>
         </div>
       </div>
     </section>
 
     <!-- PREGUNTAS -->
     <section class="section" style="padding-top:0">
-      <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:36px">
+      <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px">
         <div><span class="eyebrow">preguntas</span><h2 class="h-lg">Lo que nos preguntan.</h2></div>
         <div class="faq">
           <details><summary>¿4 Patitas es gratis?</summary><p>Sí. Registrar mascotas, publicar alertas y usar el mapa es y será gratis para los dueños.</p></details>
@@ -633,16 +628,16 @@ app.component('page-home', {
     <!-- LLAMADO FINAL -->
     <section class="wrap">
       <div class="cta" data-reveal>
-        <div>
+        <div class="cta__copy">
           <span class="eyebrow">únete a la manada</span>
-          <h2 class="h-lg" style="margin-top:8px">Haz que tu barrio cuide a tu mascota.</h2>
+          <h2 class="h-lg" style="margin-top:6px">Haz que tu barrio cuide a tu mascota.</h2>
           <p>Crea su perfil en un minuto. Si algún día se pierde, los vecinos estarán listos para ayudar.</p>
           <div class="flex">
             <a href="#/registrar" class="btn btn--primary">Crear perfil gratis</a>
             <a href="#/mapa" class="btn">Ver el mapa</a>
           </div>
         </div>
-        <div class="cta__art"><img :src="art" alt="" loading="lazy"></div>
+        <div class="cta__art"><img :src="scene" alt="" loading="lazy"></div>
       </div>
     </section>
   </main>`,
@@ -665,7 +660,7 @@ app.component('page-map', {
       layer.clearLayers();
       list.value.forEach(r => {
         const m = L.marker([r.lat, r.lng], { icon: pinIcon(r) })
-          .bindPopup(`<div class="pop"><h4>${r.name}</h4><p>${TYPES[r.type].label} · ${r.zone} · ${timeAgo(r.date)}</p><button data-open="${r.id}">Ver detalles</button></div>`)
+          .bindPopup(`<div class="pop"><h4>${esc(r.name)}</h4><p>${TYPES[r.type].label} · ${esc(r.zone)} · ${timeAgo(r.date)}</p><button data-open="${r.id}">Ver detalles</button></div>`)
           .on('click', () => (sel.value = r.id));
         markers[r.id] = m; layer.addLayer(m);
       });
@@ -893,38 +888,27 @@ app.component('page-community', {
         <h1 class="h-lg">La manada de Santa Cruz.</h1>
       </header>
       <div class="flex feed-tabs" style="margin-bottom:22px" role="tablist">
-        <button class="chip" role="tab" :aria-selected="tab==='muro'" :class="{on:tab==='muro'}" @click="tab='muro'"><ico name="chat" />Muro</button>
+        <button class="chip" role="tab" :aria-selected="tab==='muro'" :class="{on:tab==='muro'}" @click="tab='muro'"><ico name="chat" />Plaza</button>
         <button class="chip" role="tab" :aria-selected="tab==='perfiles'" :class="{on:tab==='perfiles'}" @click="tab='perfiles'"><ico name="paw" />Perfiles</button>
         <button class="chip" role="tab" :aria-selected="tab==='reunidos'" :class="{on:tab==='reunidos'}" @click="tab='reunidos'"><ico name="heart" />Reencuentros</button>
       </div>
 
       <div v-if="tab==='perfiles'" class="pets-grid tabpane">
         <a href="#/registrar" class="pet-card pet-card--add">
-          <div><div class="feature__ico" style="--c:var(--straw)"><ico name="plus" /></div><h3 style="font-size:1.4rem">Registra a tu mascota</h3><p class="muted">Gratis · 1 minuto</p></div>
+          <div><div class="feature__ico" style="--c:var(--yellow)"><ico name="plus" /></div><h3 style="font-size:1.25rem">Registra a tu mascota</h3><p class="muted">Gratis · 1 minuto</p></div>
         </a>
         <pet-card v-for="p in state.pets" :key="p.id" :pet="p" />
       </div>
 
       <div v-else class="feed-layout">
-        <div class="tabpane">
-          <article v-for="r in (tab==='reunidos' ? happy : feed)" :key="r.id" class="post">
-            <div class="post__head">
-              <div class="thumb" :style="{'--c':TYPES[r.type].color}"><ico :name="TYPES[r.type].icon" /></div>
-              <div style="flex:1;min-width:0"><b>{{ r.name }}</b> <small>{{ TYPES[r.type].verb }} {{ r.zone }}</small><br><small>{{ timeAgo(r.date) }}<template v-if="r.author"> · por <img v-if="r.avatar" :src="r.avatar" class="byline-img" alt="" referrerpolicy="no-referrer">{{ r.author }}</template></small></div>
-              <type-tag :type="r.type" />
-            </div>
-            <div class="post__media" :style="{'--c':TYPES[r.type].color}" @click="openAlert(r.id)"><pet-media :item="r" /></div>
-            <div class="post__body">
-              <p>{{ r.desc }}</p>
-              <p v-if="r.reward" style="margin-top:8px;font-weight:800"><ico name="gift" /> Recompensa: {{ r.reward }}</p>
-              <div class="post__actions">
-                <button class="like" :class="{on:r.liked}" @click="like(r)" :aria-pressed="r.liked"><ico name="heart" />{{ r.likes }}</button>
-                <button class="like" @click="openAlert(r.id)"><ico name="chat" />{{ r.comments.length }} · Lo vi</button>
-                <a class="like" :href="'#/mapa?focus='+r.id"><ico name="map" />En el mapa</a>
-                <button class="like" @click="share(r.name+' en '+BRAND,'#/mapa?focus='+r.id)"><ico name="share" />Compartir</button>
-              </div>
-            </div>
-          </article>
+        <!-- la plaza: mosaico de fotos; cada una abre su afiche -->
+        <div class="plaza tabpane">
+          <button v-for="(r,i) in (tab==='reunidos' ? happy : feed)" :key="r.id" class="tile" :class="{'tile--big': i % 7 === 0}" :style="{'--c':TYPES[r.type].color}" @click="openAlert(r.id)" :aria-label="r.name + ', ' + TYPES[r.type].label + ' en ' + r.zone">
+            <pet-media :item="r" />
+            <span class="tile__state"><type-tag :type="r.type" /></span>
+            <span class="tile__info"><b>{{ r.name }}</b><small><ico name="heart" />{{ r.likes }}</small></span>
+          </button>
+          <p v-if="!(tab==='reunidos' ? happy : feed).length" class="empty" style="grid-column:1/-1">Todavía no hay publicaciones aquí.</p>
         </div>
         <aside>
           <div class="side-card side-card--alert">
@@ -1100,7 +1084,7 @@ app.component('page-account', {
       ['lock', 'Solo tú editas lo tuyo', 'Marca a tu mascota como reunida o borra tus alertas cuando quieras.'],
     ];
     usePageFx(root, () => intro('.acct > *', { y: 24, opacity: 0, stagger: .07, duration: .9, ease: 'power3.out', delay: .15 }));
-    return { root, status, auth, myReports, myPets, faces, perks, TYPES, timeAgo, openAlert, BRAND };
+    return { root, status, auth, myReports, myPets, faces, perks, TYPES, timeAgo, openAlert, BRAND, M };
   },
   template: `
   <main class="page" ref="root">
@@ -1113,7 +1097,7 @@ app.component('page-account', {
       </section>
 
       <section v-else-if="!status.user" class="acct__join card">
-        <div class="avatars acct__faces"><span v-for="p in faces" :key="p.id"><pet-media :item="p" /></span></div>
+        <img class="acct__logo" :src="M('media/logo.svg')" alt="" width="96" height="96">
         <span class="eyebrow">mi cuenta</span>
         <h1 class="h-lg">Únete a la manada.</h1>
         <p class="lead">Ver el mapa y publicar no requiere cuenta. Con una cuenta, tus publicaciones te acompañan a todas partes.</p>
@@ -1273,22 +1257,29 @@ app.component('alert-modal', {
     const onKey = e => e.key === 'Escape' && close();
     onMounted(() => { addEventListener('keydown', onKey); intro(box.value, { y: 30, opacity: 0, duration: .6, ease: 'power3.out' }); });
     onBeforeUnmount(() => removeEventListener('keydown', onKey));
-    return { box, r, m, comment, send, reunite, remove, confirmDel, canEdit, close, TYPES, timeAgo, waLink, openAlert, go };
+    const WORDS = { perro: 'PERRO', gato: 'GATO', ave: 'AVE', conejo: 'CONEJO', otro: 'MASCOTA' };
+    const like = x => actions.toggleLike(x);
+    return { box, r, m, comment, send, reunite, remove, confirmDel, canEdit, close, TYPES, timeAgo, waLink, openAlert, go, WORDS, like, share, BRAND };
   },
   template: `
     <div class="modal" v-if="r">
       <div class="modal__bg" @click="close"></div>
       <div class="modal__box" ref="box" data-lenis-prevent role="dialog" aria-modal="true" :aria-label="r.name">
         <button class="modal__x" @click="close" aria-label="Cerrar"><ico name="close" /></button>
-        <div class="modal__media" :style="{'--c':TYPES[r.type].color}"><pet-media :item="r" /></div>
+        <!-- afiche: palabra gigante con la especie, como los carteles de "se busca" -->
+        <div class="poster" :style="{'--pc': r.type==='perdido' ? 'var(--poster)' : TYPES[r.type].color}">
+          <div class="poster__word" aria-hidden="true">{{ WORDS[r.species] || 'MASCOTA' }}</div>
+          <div class="poster__title">{{ TYPES[r.type].word }}</div>
+          <div class="poster__name">{{ r.name }} · {{ r.zone }}</div>
+          <div class="poster__photo"><pet-media :item="r" /></div>
+        </div>
         <div class="modal__body">
           <div class="flex"><type-tag :type="r.type" /><small class="muted">{{ timeAgo(r.date) }}</small></div>
-          <h2 class="h-md">{{ r.name }}</h2>
           <p>{{ r.desc }}</p>
           <dl class="kv">
             <dt>Raza</dt><dd>{{ r.breed || '—' }}</dd>
-            <dt>Color</dt><dd>{{ r.color || '—' }}</dd>
-            <dt>Zona</dt><dd>{{ r.zone }}</dd>
+            <dt>Color y señas</dt><dd>{{ r.color || '—' }}</dd>
+            <dt>Lugar</dt><dd>{{ r.zone }}</dd>
             <template v-if="r.reward"><dt>Recompensa</dt><dd><b>{{ r.reward }}</b></dd></template>
             <template v-if="r.author"><dt>Publicó</dt><dd>{{ r.author }}</dd></template>
           </dl>
@@ -1302,6 +1293,8 @@ app.component('alert-modal', {
           <div class="flex">
             <a v-if="r.type!=='reunido'" :href="waLink(r)" target="_blank" rel="noopener" class="btn btn--primary btn--sm"><ico name="whatsapp" />WhatsApp</a>
             <a :href="'#/mapa?focus='+r.id" class="btn btn--sm" @click="close"><ico name="map" />Mapa</a>
+            <button class="like" :class="{on:r.liked}" @click="like(r)" :aria-pressed="r.liked" :aria-label="'Me gusta, ' + r.likes"><ico name="heart" />{{ r.likes }}</button>
+            <button class="like" @click="share(r.name+' en '+BRAND,'#/mapa?focus='+r.id)"><ico name="share" />Compartir</button>
             <button v-if="r.type!=='reunido' && canEdit(r)" class="btn btn--sm" @click="reunite"><ico name="heart" />Reunido</button>
             <button v-if="r.mine" class="btn btn--ghost btn--sm" @click="remove" :aria-label="confirmDel ? 'Confirmar eliminar' : 'Eliminar alerta'"><ico name="trash" />{{ confirmDel ? '¿Eliminar? Toca otra vez' : '' }}</button>
           </div>
